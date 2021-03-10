@@ -1,4 +1,5 @@
 
+// STEPPER
 #include <AccelStepper.h>
 // DEBUG
 #include "debug.h"
@@ -14,11 +15,10 @@ void setup()
 {
   // SERIAL
   Serial.begin(115200);
-
+  // STEPPER
   stepper.setMaxSpeed(100);
   stepper.setAcceleration(200);//200
   stepper.moveTo(200);
-
   // stepper.setSpeed(200);
 
   // WIFI
@@ -36,8 +36,6 @@ void loop()
     delay(1000);
     stepper.moveTo(-stepper.currentPosition());
   }
-
-
   stepper.run();
 
   // Serial.println(stepper.currentPosition());
