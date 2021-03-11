@@ -1,12 +1,14 @@
-#define DEBUGFLAG
 
 #define K32_SET_NODEID      1
 #define K32_SET_HWREVISION  1
 
+
+#include "debug.h"
+
 #include <AccelStepper.h>
 #include "src/K32-lite/K32.h"
 #include "anim_leds.h"
-#include "debug.h"
+
 
 
 #define PIN_LEDSTRIP  18
@@ -32,26 +34,25 @@ void setup()
   stepper->setAcceleration(200);//200
   stepper->moveTo(200);
 
+  // WIFI
+  k32->init_wifi("faraway");
+    // k32->wifi->staticIP("10.2.100." + String(k32->system->id()), "10.2.0.1", "255.255.0.0");
+  k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");
+
   // LEDS
   k32->light->addStrip(PIN_LEDSTRIP, (led_types)STRIP_TYPE, STRIP_SIZE);
-  k32->light->start();
 
-  // LEDS TEST
+  // ANIMATIONS  
   k32->light->anim( 0, "test0",   new K32_anim_test )->push(300)->master(60)->play()->wait();
   k32->light->anim( 0, "color",   new K32_anim_color);
   k32->light->anim( 0, "chaser",   new Anim_chaser)->push(5000)->play();
-  Serial.println("leds ok");
-
-  // WIFI
-  k32->init_wifi("faraway");
-  LOG("wifi inited");
-  // k32->wifi->staticIP("10.2.100." + String(k32->system->id()), "10.2.0.1", "255.255.0.0");
-  // k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");  ############ BLOCKING (Serial ??)
-  LOG("wifi connecting");
 }
 
 void loop()
 {
+
+  debugI("Hello Zorld");
+  delay(500);
 
   if (stepper->distanceToGo() == 0){
     delay(1000);

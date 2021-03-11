@@ -17,13 +17,15 @@
 #include "system/K32_system.h"
 #include "light/K32_light.h"
 #include "network/K32_wifi.h"
+#include "system/K32_debug.h"
+
+
 
 class K32
 {
 public:
     K32()
     {
-
         // LOG
         LOGSETUP();
         LOG("\n\n.:: K32 ::.");
@@ -52,21 +54,21 @@ public:
 
         LOG("");
         delay(100);
-
     }
 
 
     K32_timer* timer;
     K32_system *system      = NULL;
     K32_wifi *wifi          = NULL;
-    K32_light *light        = NULL;
-            
+    K32_light *light        = NULL;          
 
     void init_wifi(String nameAlias = "")
     {
         if (nameAlias != "")
             nameAlias = "-" + nameAlias;
         wifi = new K32_wifi(system->name() + nameAlias);
+
+        Debug.setWifi(wifi);
     }
 
 };

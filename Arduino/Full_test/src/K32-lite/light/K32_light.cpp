@@ -11,9 +11,6 @@ K32_light::K32_light()
 {
   digitalLeds_init();
 
-}
-
-void K32_light::start() {
   LOG("start light");
    xTaskCreate( this->refresh,           // function
                     "modulate_task",            // task name
@@ -33,9 +30,8 @@ void K32_light::addStrip(const int pin, led_types type, int size)
   }
 
   int s = this->_nstrips;
-  this->_nstrips += 1;
-  
   this->_strips[s] = new K32_ledstrip(s, pin, type, size);
+  this->_nstrips += 1;
 }
 
 // link every strip to masterStrip

@@ -44,8 +44,6 @@ class K32_light {
   public:
     K32_light();
 
-    void start();
-    
     // STRIPS
     //
     void addStrip(const int pin, led_types type, int size = 0);
