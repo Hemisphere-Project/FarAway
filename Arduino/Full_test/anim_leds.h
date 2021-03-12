@@ -32,16 +32,18 @@ public:
 
         // Size
         int& size = data[1];
+
+        this->pixel( pos, CRGBW::GhostWhite);
         
-        // Forward
-        if (pos > lastPos) 
-            for(int k=max(0, pos-size); k <= pos; k++)
-                this->pixel( k, CRGBW::GhostWhite);
+        // // Forward
+        // if (pos > lastPos) 
+        //     for(int k=max(0, pos-size); k <= pos; k++)
+        //         this->pixel( k, CRGBW::GhostWhite);
         
-        // Backward
-        else
-            for(int k=max(0, pos+size); k <= pos; k++)
-                this->pixel( k, CRGBW::GhostWhite);
+        // // Backward
+        // else
+        //     for(int k=max(0, pos+size); k <= pos; k++)
+        //         this->pixel( k, CRGBW::GhostWhite);
 
 
         lastPos = pos;

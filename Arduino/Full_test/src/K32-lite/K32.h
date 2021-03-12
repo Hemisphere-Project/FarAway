@@ -13,10 +13,10 @@
 #define max(m, n) ((m) > (n) ? (m) : (n))
 
 #include "../../debug.h"
+#include "network/K32_wifi.h"
 #include "system/K32_timer.h"
 #include "system/K32_system.h"
 #include "light/K32_light.h"
-#include "network/K32_wifi.h"
 #include "system/K32_debug.h"
 
 
@@ -27,7 +27,6 @@ public:
     K32()
     {
         // LOG
-        LOGSETUP();
         LOG("\n\n.:: K32 ::.");
 
         // SYSTEM
@@ -57,7 +56,7 @@ public:
     }
 
 
-    K32_timer* timer;
+    K32_timer* timer        = NULL;
     K32_system *system      = NULL;
     K32_wifi *wifi          = NULL;
     K32_light *light        = NULL;          

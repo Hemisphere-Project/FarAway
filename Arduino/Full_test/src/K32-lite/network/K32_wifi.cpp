@@ -138,7 +138,7 @@ bool K32_wifi::wait(int timeout_s)
       return true;
     retries += 1;
   }
-  LOG("\nWIFI: timeout is over..\n");
+  Serial.println("\nWIFI: timeout is over..\n");
   return false;
 }
 
@@ -161,7 +161,7 @@ void K32_wifi::getWiFiLevel(uint8_t (&led_display)[6])
     led_display[1] = 4;
     long wifiRSSI = this->getRSSI();
     long comp = -80; // Used to compare RSSI value
-    LOGF("\nWIFI: Rssi : %ld \n", wifiRSSI);
+    Serial.printf("\nWIFI: Rssi : %ld \n", wifiRSSI);
     for (int l = 2; l < 6; l++)
     {
       if (wifiRSSI > comp)
@@ -183,7 +183,7 @@ void K32_wifi::getWiFiLevel(uint8_t (&led_display)[6])
       led_display[l] = 0;
     }
 
-    LOG("\nWifi not connected \n");
+    Serial.println("\nWifi not connected \n");
   }
 }
 
@@ -248,7 +248,7 @@ void K32_wifi::task(void *parameter)
     // DISCONNECTED
     if (K32_wifi::didDisconnect)
     {
-      LOG("WIFI: disconnected");
+      Serial.println("WIFI: disconnected");
       K32_wifi::ok = false;
       K32_wifi::didDisconnect = false;
       that->engageConnection = -1 * KWIFI_CONNECTION_TIMEOUT;
@@ -263,13 +263,13 @@ void K32_wifi::task(void *parameter)
       {
         ++that->retry;
         if (that->engageConnection > 0)
-          LOG("WIFI: can't establish connection..");
+          Serial.println("WIFI: can't establish connection..");
 
         WiFi.disconnect(true);
         WiFi.mode(WIFI_OFF);
         vTaskDelay(pdMS_TO_TICKS(100));
 
-        LOGF("WIFI: reconnecting.. %i\n", that->retry);
+        Serial.printf("WIFI: reconnecting.. %i\n", that->retry);
         that->connect();
       }
     }
@@ -282,13 +282,13 @@ void K32_wifi::task(void *parameter)
 
       // INFO
       LOGINL("WIFI: connected = ");
-      LOG(WiFi.localIP());
+      Serial.println(WiFi.localIP());
 
       // OTA
       if (that->otaEnable) {
         ArduinoOTA.begin();
         LOGINL("OTA: started = ");
-        LOG(that->nameDevice);
+        Serial.println(that->nameDevice);
       }
       else MDNS.begin(that->nameDevice.c_str());
 

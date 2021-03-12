@@ -1,11 +1,12 @@
 
-#define K32_SET_NODEID      1
+#define K32_SET_NODEID      0
 #define K32_SET_HWREVISION  1
 
 
 #include "debug.h"
 
-#include <AccelStepper.h>
+// #include <AccelStepper.h>
+#include <SpeedyStepper.h>
 #include "src/K32-lite/K32.h"
 #include "anim_leds.h"
 
@@ -19,8 +20,12 @@
 int dirPin = 17;
 int pulPin = 4;
 
-AccelStepper* stepper;
+// AccelStepper* stepper;
+SpeedyStepper* stepper;
 K32 *k32;
+
+enum Steps {STOP, MOVE, DECEL};
+Steps step = STOP;
 
 
 void setup()
@@ -29,10 +34,17 @@ void setup()
   k32 = new K32();
 
   // STEPPER
-  stepper = new AccelStepper(AccelStepper::DRIVER, pulPin, dirPin);
-  stepper->setMaxSpeed(100);
-  stepper->setAcceleration(200);//200
-  stepper->moveTo(200);
+  // stepper = new AccelStepper(AccelStepper::DRIVER, pulPin, dirPin);
+  // stepper->setMaxSpeed(700);
+  // stepper->setAcceleration(400);//200
+
+  // STEPPER 2
+  stepper = new SpeedyStepper();
+  stepper->connectToPins(pulPin, dirPin);
+  stepper->setStepsPerRevolution(4800);
+  stepper->setSpeedInRevolutionsPerSecond(0.2);
+  stepper->setAccelerationInRevolutionsPerSecondPerSecond(0.2);
+
 
   // WIFI
   k32->init_wifi("faraway");
@@ -44,26 +56,60 @@ void setup()
 
   // ANIMATIONS  
   k32->light->anim( 0, "test0",   new K32_anim_test )->push(300)->master(60)->play()->wait();
-  k32->light->anim( 0, "color",   new K32_anim_color);
+  // k32->light->anim( 0, "color",   new K32_anim_color)->push(100,100,100,100)->play();
   k32->light->anim( 0, "chaser",   new Anim_chaser)->push(5000)->play();
+
+  // DEBUG
+  k32->timer->every(300, []() {
+    
+    debugD("pos: %d, %d, %d", stepper->getCurrentPositionInRevolutions(), stepper->getCurrentVelocityInRevolutionsPerSecond(), step);
+
+  });
+
 }
 
 void loop()
 {
-
-  debugI("Hello Zorld");
-  delay(500);
-
-  if (stepper->distanceToGo() == 0){
-    delay(1000);
-    stepper->moveTo(-stepper->currentPosition());
+  
+  if (step == STOP) {
+    delay(5000);
+    triggerStart();
   }
 
-  stepper->run();
+  if (step == MOVE && stepper->getCurrentPositionInRevolutions() > 0.5) {
+    triggerDecel();
+  }
+
+  if (step == DECEL && stepper->getCurrentVelocityInRevolutionsPerSecond() == 0) {
+    step = STOP;
+  }
+
+
+  // Decelerate
+  // if (side != (stepper->currentPosition() > 0)) {
+  //   stepper->setAcceleration(50);
+  //   side = (stepper->currentPosition() > 0);
+  // }
+
+  // if (stepper->distanceToGo() == 0){
+  //   delay(5000);
+  //   stepper->setAcceleration(4000);
+  //   stepper->moveTo(-stepper->currentPosition());
+  //   side = (stepper->currentPosition() > 0);
+  // }
+
 
   delay(1);
+}
 
-  // LOG(stepper->currentPosition());
-  // stepper->runSpeed();
 
+void triggerStart() {
+  stepper->setAccelerationInRevolutionsPerSecondPerSecond(0.2);
+  stepper->moveRelativeInRevolutions(1.0);
+  step = MOVE;
+}
+
+void triggerDecel() {
+  stepper->setAccelerationInRevolutionsPerSecondPerSecond(0.01);
+  step = DECEL;
 }

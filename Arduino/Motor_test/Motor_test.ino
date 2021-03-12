@@ -16,9 +16,9 @@ void setup()
   // SERIAL
   Serial.begin(115200);
   // STEPPER
-  stepper.setMaxSpeed(10);
-  stepper.setAcceleration(20);//200
-  stepper.moveTo(200);
+  stepper.setMaxSpeed(320);
+  stepper.setAcceleration(4000);//200
+  stepper.moveTo(1600);
   // stepper.setSpeed(200);
 
   // WIFI
