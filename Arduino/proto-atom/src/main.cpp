@@ -143,9 +143,6 @@ void loop()
     Trigger2 = millis();
   }
 
-  // CHECK TRIGGER2
-  // TODO
-
   // ANIMATION
   if (Trigger1 || Trigger2) 
   {
