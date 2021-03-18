@@ -29,6 +29,9 @@ class K32_anim_test : public K32_anim {
     {
       int stepMS = data[0];
 
+      this->all( CRGBW{0,0,0,255} );
+      this->pause(stepMS);
+
       this->all( CRGBW{255,0,0} );
       this->pause(stepMS);
 
@@ -36,9 +39,6 @@ class K32_anim_test : public K32_anim {
       this->pause(stepMS);
 
       this->all( CRGBW{0,0,255} );
-      this->pause(stepMS);
-
-      this->all( CRGBW{0,0,0,255} );
       this->pause(stepMS);
 
       this->clear();

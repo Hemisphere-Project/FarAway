@@ -18,6 +18,8 @@ struct wificonf
   const char *ip;
 };
 
+enum OtaState {OFF, START, PROGRESS, DONE, ERROR};
+
 class K32_wifi {
   public:
     K32_wifi(String nameDevice);
@@ -50,6 +52,8 @@ class K32_wifi {
 
     void onConnect( void (*callback)(void) );
     void onDisconnect( void (*callback)(void) );
+
+    OtaState otaState = OFF;
 
   private:
     SemaphoreHandle_t lock;

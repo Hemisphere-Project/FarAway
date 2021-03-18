@@ -1,6 +1,8 @@
+#define FA_VERSION  0
 
-#define K32_SET_NODEID      0
-#define K32_SET_HWREVISION  1
+// Config (one time Burn): it is then stored in EEPROM !
+//
+#define K32_SET_NODEID    0
 
 
 #include "debug.h"
@@ -18,39 +20,42 @@ ESP_FlexyStepper stepper;
 
 K32 *k32;
 
-float maxSpeed = 0;
+float maxSpeed = 1;
+float lastSpeed = 0;
+float debugSpeed = -1;
+int master = 0;
 
 void setup()
 {
-  
-  
   // K32 Lib
   k32 = new K32();
+
+  // LIDDAR
+  liddar_setup();
 
   // STEPPER
   stepper_setup();
 
   // WIFI
-  k32->init_wifi("faraway-leds");
+  k32->init_wifi("faraway-v"+String(FA_VERSION));
   k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");
+  // k32->wifi->connect("interweb", "superspeed37");
 
   // STRIP
   k32->light->addStrip(PIN_LEDSTRIP, (led_types)STRIP_TYPE, STRIP_SIZE);
 
   // ANIMATIONS  
-  k32->light->anim( 0, "test0",   new K32_anim_test )->push(300)->master(60)->play()->wait();
-  k32->light->anim( 0, "color",   new K32_anim_color)->push(255,255,255,255)->play();
-  // k32->light->anim( 0, "chaser",   new Anim_chaser)->push(5000)->play();
+  k32->light->anim( 0, "test0",   new K32_anim_test )->push(200)->master(60)->play()->wait();
+  k32->light->anim( 0, "color",   new K32_anim_color)->push(0,0,0,0)->play();
 
   // DEBUG
-  k32->timer->every(100, []() {
-    debugD("speed: %.3f", stepper.getCurrentVelocityInStepsPerSecond());
+  k32->timer->every(300, []() {
+    float speed = stepper.getCurrentVelocityInStepsPerSecond();
+    if (speed != debugSpeed) {
+      debugD("speed: %.3f", speed);
+      debugSpeed = speed;
+    }
   });
-
-  // LIDDAR
-  liddar_setup();
-
-  
 
 }
 
@@ -59,19 +64,27 @@ int inc = -1;
 
 void loop()
 {
-  // bool trig = liddar_check();
+  // OTA in progress
+  if (k32->wifi->otaState == ERROR) ESP.restart();
+  else if (k32->wifi->otaState > OFF) {
+    stepper_breaker();
+    delay(1000);
+    k32->light->anim("color")->push(50, 0, 0, 0);
+    return;
+  }
 
-  // if (trig) k32->light->anim("color")->push(100);
-  // else k32->light->anim("color")->push(0);
-
-  delay(10);
-  stepper_loop();
+  if (liddar_check()) stepper_kick();
 
   float speed = stepper.getCurrentVelocityInStepsPerSecond();
   if (speed < 0) speed *= -1;
   if (speed > maxSpeed) maxSpeed = speed;
 
-  int master = min(255, 100*speed/maxSpeed);
-  // k32->light->anim("color")->push(master);
+  if (lastSpeed<speed) master = 255;            // Accelerate -> full brightness
+  else master = min(255, 255*speed/maxSpeed);   // Decelerate -> proportional brightness
+  lastSpeed = speed;
+
+  k32->light->anim("color")->push(master, master, master, master);
+
+  delay(2);
 }
 
