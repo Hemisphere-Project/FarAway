@@ -1,25 +1,25 @@
-#define DEBUGFLAG
 
-#define K32_SET_NODEID      1
+#define K32_SET_NODEID      0
 #define K32_SET_HWREVISION  1
 
-#include <AccelStepper.h>
-#include "src/K32-lite/K32.h"
-#include "anim_leds.h"
+
 #include "debug.h"
 
+#include <ESP_FlexyStepper.h>   // https://github.com/pkerspe/ESP-FlexyStepper
+ESP_FlexyStepper stepper;
 
-#define PIN_LEDSTRIP  18
+#include <ArduinoOTA.h>
+#include "src/K32-lite/K32.h"
+#include "anim_leds.h"
+
+#define PIN_LEDSTRIP  26
 #define PIN_LEDDOT    19
 #define STRIP_TYPE    LED_SK6812W_V1  // LED_WS2812_V1  LED_WS2812B_V1  LED_WS2812B_V2  LED_WS2812B_V3  LED_WS2813_V1  LED_WS2813_V2   LED_WS2813_V3  LED_WS2813_V4  LED_SK6812_V1  LED_SK6812W_V1,
 #define STRIP_SIZE    180
 
-int dirPin = 17;
-int pulPin = 4;
+float maxSpeed = 0;
 
-AccelStepper* stepper;
 K32 *k32;
-
 
 void setup()
 {
@@ -27,42 +27,46 @@ void setup()
   k32 = new K32();
 
   // STEPPER
-  stepper = new AccelStepper(AccelStepper::DRIVER, pulPin, dirPin);
-  stepper->setMaxSpeed(100);
-  stepper->setAcceleration(200);//200
-  stepper->moveTo(200);
+  // stepper_setup();
+
+  // WIFI
+  k32->init_wifi("faraway-leds");
+  k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");
 
   // LEDS
   k32->light->addStrip(PIN_LEDSTRIP, (led_types)STRIP_TYPE, STRIP_SIZE);
-  k32->light->start();
 
-  // LEDS TEST
+  // ANIMATIONS  
   k32->light->anim( 0, "test0",   new K32_anim_test )->push(300)->master(60)->play()->wait();
-  k32->light->anim( 0, "color",   new K32_anim_color);
-  k32->light->anim( 0, "chaser",   new Anim_chaser)->push(5000)->play();
-  Serial.println("leds ok");
+  k32->light->anim( 0, "color",   new K32_anim_color)->push(100,0,0,0)->play();
+  // k32->light->anim( 0, "chaser",   new Anim_chaser)->push(5000)->play();
 
-  // WIFI
-  k32->init_wifi("faraway");
-  LOG("wifi inited");
-  // k32->wifi->staticIP("10.2.100." + String(k32->system->id()), "10.2.0.1", "255.255.0.0");
-  // k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");  ############ BLOCKING (Serial ??)
-  LOG("wifi connecting");
+  // DEBUG
+  k32->timer->every(100, []() {
+    // debugD("speed: %.3f", stepper.getCurrentVelocityInStepsPerSecond());
+  });
+
 }
+
+int dec = 255;
+int inc = -1;
 
 void loop()
 {
+  // stepper_loop();
+  delay(10);
 
-  if (stepper->distanceToGo() == 0){
-    delay(1000);
-    stepper->moveTo(-stepper->currentPosition());
-  }
+  // float speed = stepper.getCurrentVelocityInStepsPerSecond();
+  // if (speed < 0) speed *= -1;
+  // if (speed > maxSpeed) maxSpeed = speed;
 
-  stepper->run();
+  // int master = min(255, 100*speed/maxSpeed);
 
-  delay(1);
+  dec += inc;
+  if (dec <= 0 or dec >= 255) inc *= -1;
+  k32->light->anim("color")->push(dec);
 
-  // LOG(stepper->currentPosition());
-  // stepper->runSpeed();
-
+  // debugD("master: %.3f %.3f %d", speed, maxSpeed, master);
+  
 }
+

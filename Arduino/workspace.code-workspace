@@ -1,0 +1,18 @@
+{
+    "folders": [
+		{
+			"path": "hello_world"
+		},
+		{
+			"path": "Full-Atom"
+		},
+		{
+			"path": "Bi-Leds"
+		}
+	],
+    "settings": {
+        "idf.flashType": "UART",
+        "idf.port": "/dev/ttyUSB1",
+        "idf.flashBaudRate": "1500000"
+    }
+}
