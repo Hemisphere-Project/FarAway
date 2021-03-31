@@ -1,9 +1,10 @@
-#define FA_VERSION  0
+#define FA_VERSION  1     // PROTO
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
 #define K32_SET_NODEID    0
 
+enum States {STOP, MOVE, FREE, END, ACCU, SLOW};
 
 #include "debug.h"
 
@@ -16,7 +17,7 @@ ESP_FlexyStepper stepper;
 #define PIN_LEDSTRIP  26
 #define PIN_LEDDOT    19
 #define STRIP_TYPE    LED_SK6812W_V1  // LED_WS2812_V1  LED_WS2812B_V1  LED_WS2812B_V2  LED_WS2812B_V3  LED_WS2813_V1  LED_WS2813_V2   LED_WS2813_V3  LED_WS2813_V4  LED_SK6812_V1  LED_SK6812W_V1,
-#define STRIP_SIZE    180
+#define STRIP_SIZE    140
 
 K32 *k32;
 
@@ -38,7 +39,8 @@ void setup()
 
   // WIFI
   k32->init_wifi("faraway-v"+String(FA_VERSION));
-  k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");
+  k32->wifi->connect("hmsphr", "hemiproject");
+  // k32->wifi->connect("kxkm-wifi", "KOMPLEXKAPHARNAUM");
   // k32->wifi->connect("interweb", "superspeed37");
 
   // STRIP
@@ -47,6 +49,7 @@ void setup()
   // ANIMATIONS  
   k32->light->anim( 0, "test0",   new K32_anim_test )->push(200)->master(60)->play()->wait();
   k32->light->anim( 0, "color",   new K32_anim_color)->push(0,0,0,0)->play();
+  k32->light->anim( 0, "chaser",   new Anim_chaser)->push(1000, 5, 100);
 
   // DEBUG
   k32->timer->every(300, []() {
@@ -56,6 +59,8 @@ void setup()
       debugSpeed = speed;
     }
   });
+
+  stepper_slowrun();
 
 }
 
@@ -69,7 +74,8 @@ void loop()
   else if (k32->wifi->otaState > OFF) {
     stepper_breaker();
     delay(1000);
-    k32->light->anim("color")->push(50, 0, 0, 0);
+    k32->light->anim("chaser")->stop();
+    k32->light->anim("color")->push(0, 0, 50, 0)->play();
     return;
   }
 
@@ -80,10 +86,26 @@ void loop()
   if (speed > maxSpeed) maxSpeed = speed;
 
   if (lastSpeed<speed) master = 255;            // Accelerate -> full brightness
-  else master = min(255, 255*speed/maxSpeed);   // Decelerate -> proportional brightness
+  else {
+    master = min(255, 255*speed/maxSpeed);   // Decelerate -> proportional brightness
+    //if (stepper_time() > 2000) stepper_enable(false);
+  }
   lastSpeed = speed;
 
-  k32->light->anim("color")->push(master, master, master, master);
+  if (stepper_state() == MOVE || stepper_state() == FREE) {
+    k32->light->anim("chaser")->stop();
+    k32->light->anim("color")->push(master, master, master, master)->play();
+  }
+  else if (stepper_state() == ACCU) {
+    k32->light->anim("color")->stop();
+    k32->light->anim("chaser")->push(2000, STRIP_SIZE/2, 40)->play();
+  }
+  else {
+    // k32->light->anim("chaser")->stop();
+    // k32->light->anim("color")->push(100, 0, 0, 0)->play();
+    k32->light->anim("color")->stop();
+    k32->light->anim("chaser")->push(12000, 5, 40)->play();
+  }
 
   delay(2);
 }

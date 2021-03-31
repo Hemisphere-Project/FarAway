@@ -31,19 +31,18 @@ public:
         int pos = mod("chase")->value();
 
         // Size
-        int& size = data[1];
+        int& sizez = data[1];
 
-        this->pixel( pos, CRGBW::GhostWhite);
-        
-        // // Forward
-        // if (pos > lastPos) 
-        //     for(int k=max(0, pos-size); k <= pos; k++)
-        //         this->pixel( k, CRGBW::GhostWhite);
-        
-        // // Backward
-        // else
-        //     for(int k=max(0, pos+size); k <= pos; k++)
-        //         this->pixel( k, CRGBW::GhostWhite);
+        CRGBW color(255,255,255,255);
+
+        // this->pixel( pos, CRGBW::GhostWhite);
+        this->all(color);
+
+        int amp = sizez/2;
+        for (int k=0; k < amp; k++) {
+            this->pixel( pos-k, CRGBW::Black);
+            this->pixel( pos+k, CRGBW::Black);
+        }
 
 
         lastPos = pos;

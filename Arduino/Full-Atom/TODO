@@ -1,0 +1,5 @@
+- scanner lent => nombre de tour entre (5,7)
+- changement de tour de scan 
+=> déclenchement: inversion de sens
+fin du mouvement -> pause, accumulation de rouge
+puis retour au scan 

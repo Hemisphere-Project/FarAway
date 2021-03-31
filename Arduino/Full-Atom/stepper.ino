@@ -1,14 +1,22 @@
+#include "Arduino.h"
+
 int dirPin = 21;
 int pulPin = 25;
-int enablePin = 32;
+int enablePin = 22;
 
-int stepsPerRevolution = 25600*1.65;
+int stepsPerRevolution = 25600*2;
 
-enum States {STOP, MOVE, WAIT};
 States state = STOP;
 
-float targetRun = 1.0;
+float targetRun = 1.2;
 bool enableState = false;
+
+// set the speed and acceleration rates for the stepper motor
+int speed = stepsPerRevolution*0.3;     //*0.1; 
+int accel = 4*speed;                    //4*speed;
+int decel = 0.15*speed/targetRun;       //0.15*speed/targetRun;
+
+unsigned long accu_trig;
 
 void stepper_setup() 
 {
@@ -19,19 +27,11 @@ void stepper_setup()
     // connect and configure the stepper motor to its IO pins
     stepper.connectToPins(pulPin, dirPin);
     stepper.setStepsPerRevolution(stepsPerRevolution);
-    
-    // set the speed and acceleration rates for the stepper motor
-    int speed = stepsPerRevolution*0.1;     //*0.1; 
-    int accel = 4*speed;                    //4*speed;
-    int decel = 0.15*speed/targetRun;       //0.15*speed/targetRun;
 
-    stepper.setSpeedInStepsPerSecond(speed);
-    stepper.setAccelerationInStepsPerSecondPerSecond(accel);
-    stepper.setDecelerationInStepsPerSecondPerSecond(decel);
 
     // Reach destination Callback
     stepper.registerTargetPositionReachedCallback([](long position){
-        xTaskCreate(state_offTask, "state_off", 2000, NULL, 1, NULL);
+        xTaskCreate(stepper_offTask, "state_off", 2000, NULL, 1, NULL);
     });
 
     // Start the stepper instance as a service in the "background" as a separate task
@@ -45,33 +45,72 @@ void stepper_breaker()
     //     stepper_enable(false);
     //     stepper.setTargetPositionToStop();
     // }
+    stepper_enable(false);
     stepper.stopService();
 }
 
-void state_offTask(void* param)
+void stepper_offTask(void* param)
 {
-    state = WAIT;
-    delay(1000);
-    state = STOP;
     stepper_enable(false);
+
+    if (state == MOVE || state == FREE) while(stepper_accumulate()) delay(10);
+
+    if (state == ACCU || state == SLOW) stepper_slowrun();
 
     vTaskDelete( NULL );
 }
 
 
-void stepper_kick()
+bool stepper_kick()
 {
     // Ready to start
-    if (state == STOP) {
+    if (state == SLOW) {
         stepper_enable(true);
-        targetRun *= -1;
+        stepper.setSpeedInStepsPerSecond(speed);
+        stepper.setAccelerationInStepsPerSecondPerSecond(accel);
+        stepper.setDecelerationInStepsPerSecondPerSecond(decel);
         stepper.setTargetPositionRelativeInRevolutions(targetRun);
         state = MOVE;
+        return true;
     }
+    return false;
 }
+
+void stepper_freerun()
+{
+    state = FREE;
+    stepper_enable(false);
+}
+
+bool stepper_accumulate()
+{
+    if (state != ACCU) accu_trig = millis();
+    state = ACCU;
+    return (millis()-accu_trig < 5000);
+}
+
+void stepper_slowrun()
+{
+    state = SLOW;
+
+    stepper.setSpeedInStepsPerSecond(speed/50);
+    stepper.setAccelerationInStepsPerSecondPerSecond(accel/10);
+    stepper.setDecelerationInStepsPerSecondPerSecond(accel/10);
+
+    targetRun *= -1;
+
+    float target = targetRun*random(5,7)/abs(targetRun);
+    stepper.setTargetPositionRelativeInRevolutions(target);
+    stepper_enable(true);
+}
+
 
 void stepper_enable(bool doEnable) 
 {
     enableState = doEnable;
     digitalWrite(enablePin, !enableState);
 } 
+
+States stepper_state() {
+    return state;
+}
