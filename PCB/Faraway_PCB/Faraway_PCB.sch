@@ -52,86 +52,64 @@ Text GLabel 5500 1950 2    50   Input ~ 0
 EN
 Text GLabel 5500 2050 2    50   Input ~ 0
 LED
-Text Notes 7100 1750 0    50   ~ 0
+Text Notes 6500 1800 0    50   ~ 0
 PUL
-Text Notes 7100 1850 0    50   ~ 0
+Text Notes 6500 1900 0    50   ~ 0
 DIR
-Text Notes 7100 1950 0    50   ~ 0
+Text Notes 6500 2000 0    50   ~ 0
 EN
-Text Notes 7100 2050 0    50   ~ 0
+Text Notes 6500 2100 0    50   ~ 0
 LED
-Text Notes 7100 1550 0    50   ~ 0
+Text Notes 6500 1600 0    50   ~ 0
 5V
 $Comp
 L power:GND #PWR0101
 U 1 1 6070B389
-P 6850 1600
-F 0 "#PWR0101" H 6850 1350 50  0001 C CNN
-F 1 "GND" V 6855 1472 50  0000 R CNN
-F 2 "" H 6850 1600 50  0001 C CNN
-F 3 "" H 6850 1600 50  0001 C CNN
-	1    6850 1600
+P 6250 1650
+F 0 "#PWR0101" H 6250 1400 50  0001 C CNN
+F 1 "GND" V 6255 1522 50  0000 R CNN
+F 2 "" H 6250 1650 50  0001 C CNN
+F 3 "" H 6250 1650 50  0001 C CNN
+	1    6250 1650
 	0    1    1    0   
 $EndComp
 $Comp
 L power:+5V #PWR0102
 U 1 1 6070A8F7
-P 6850 1500
-F 0 "#PWR0102" H 6850 1350 50  0001 C CNN
-F 1 "+5V" V 6865 1628 50  0000 L CNN
-F 2 "" H 6850 1500 50  0001 C CNN
-F 3 "" H 6850 1500 50  0001 C CNN
-	1    6850 1500
+P 6250 1550
+F 0 "#PWR0102" H 6250 1400 50  0001 C CNN
+F 1 "+5V" V 6265 1678 50  0000 L CNN
+F 2 "" H 6250 1550 50  0001 C CNN
+F 3 "" H 6250 1550 50  0001 C CNN
+	1    6250 1550
 	0    -1   -1   0   
 $EndComp
-Text Notes 7100 1650 0    50   ~ 0
+Text Notes 6500 1700 0    50   ~ 0
 GND
 $Comp
 L Connector:Conn_01x06_Female RJ45_INPUT1
 U 1 1 60706020
-P 7050 1700
-F 0 "RJ45_INPUT1" H 7078 1630 50  0001 L CNN
-F 1 "Conn_01x06_Female" H 7078 1585 50  0001 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical" H 7050 1700 50  0001 C CNN
-F 3 "~" H 7050 1700 50  0001 C CNN
-F 4 "" H 7050 1700 50  0001 C CNN "Champ4"
-	1    7050 1700
+P 6450 1750
+F 0 "RJ45_INPUT1" H 6478 1680 50  0001 L CNN
+F 1 "Conn_01x06_Female" H 6478 1635 50  0001 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical" H 6450 1750 50  0001 C CNN
+F 3 "~" H 6450 1750 50  0001 C CNN
+F 4 "" H 6450 1750 50  0001 C CNN "Champ4"
+	1    6450 1750
 	1    0    0    -1  
 $EndComp
-Text GLabel 6850 1700 0    50   Input ~ 0
+Text GLabel 6250 1750 0    50   Input ~ 0
 PUL
-Text GLabel 6850 1800 0    50   Input ~ 0
+Text GLabel 6250 1850 0    50   Input ~ 0
 DIR
-Text GLabel 6850 1900 0    50   Input ~ 0
+Text GLabel 6250 1950 0    50   Input ~ 0
 EN
-Text GLabel 6850 2000 0    50   Input ~ 0
+Text GLabel 6250 2050 0    50   Input ~ 0
 LED
-Text Notes 6600 1400 0    50   ~ 0
+Text Notes 6000 1450 0    50   ~ 0
 RJ45 Input\nTo Motor Driver + Red Led
 Text Notes 4400 1350 0    50   ~ 0
 ESP32_DevKitV1_30Pins
-$Comp
-L Connector:Conn_01x02_Female I2C1
-U 1 1 6071FE40
-P 7100 2750
-F 0 "I2C1" H 7128 2680 50  0000 L CNN
-F 1 "Conn_01x02_Female" H 7128 2635 50  0001 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical" H 7100 2750 50  0001 C CNN
-F 3 "~" H 7100 2750 50  0001 C CNN
-	1    7100 2750
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:Conn_01x02_Female ISC2
-U 1 1 60722EEB
-P 7100 3050
-F 0 "ISC2" H 7128 2980 50  0000 L CNN
-F 1 "Conn_01x02_Female" H 7128 2935 50  0001 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical" H 7100 3050 50  0001 C CNN
-F 3 "~" H 7100 3050 50  0001 C CNN
-	1    7100 3050
-	1    0    0    -1  
-$EndComp
 $Comp
 L Connector:Conn_01x02_Female HP1
 U 1 1 60723644
@@ -178,15 +156,11 @@ F 3 "" H 3250 2750 50  0001 C CNN
 	1    3250 2750
 	1    0    0    -1  
 $EndComp
-Text GLabel 6900 2750 0    50   Input ~ 0
+Text GLabel 6300 2700 0    50   Input ~ 0
 SCL
-Text GLabel 6900 2850 0    50   Input ~ 0
+Text GLabel 6300 2800 0    50   Input ~ 0
 SDA
-Text GLabel 6900 3050 0    50   Input ~ 0
-SCL
-Text GLabel 6900 3150 0    50   Input ~ 0
-SDA
-Text Notes 6700 2650 0    50   ~ 0
+Text Notes 6100 2450 0    50   ~ 0
 LIDAR_I2C
 Text GLabel 2650 3250 0    50   Input ~ 0
 AUDIO
@@ -221,7 +195,7 @@ F 1 "PN2222A" H 3340 3295 50  0000 L CNN
 F 2 "Package_TO_SOT_THT:TO-92_Inline" H 3350 3175 50  0001 L CIN
 F 3 "http://www.fairchildsemi.com/ds/PN/PN2222A.pdf" H 3150 3250 50  0001 L CNN
 	1    3150 3250
-	1    0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L Connector:Conn_01x02_Female 5V_BONUS1
@@ -276,15 +250,95 @@ F 3 "~" H 4050 2450 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_01x06_Female RJ45_INPUT2
-U 1 1 606EDC89
-P 7700 2000
-F 0 "RJ45_INPUT2" H 7728 1930 50  0001 L CNN
-F 1 "Conn_01x06_Female" H 7728 1885 50  0001 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 7700 2000 50  0001 C CNN
-F 3 "~" H 7700 2000 50  0001 C CNN
-F 4 "" H 7700 2000 50  0001 C CNN "Champ4"
-	1    7700 2000
+L Connector:Conn_01x04_Female I2C1
+U 1 1 6070AEBF
+P 6500 2700
+F 0 "I2C1" H 6528 2630 50  0000 L CNN
+F 1 "Conn_01x04_Female" H 6528 2585 50  0001 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 6500 2700 50  0001 C CNN
+F 3 "~" H 6500 2700 50  0001 C CNN
+	1    6500 2700
 	1    0    0    -1  
+$EndComp
+Text GLabel 6300 3350 0    50   Input ~ 0
+SCL
+Text GLabel 6300 3450 0    50   Input ~ 0
+SDA
+$Comp
+L Connector:Conn_01x04_Female I2C2
+U 1 1 6070D446
+P 6500 3350
+F 0 "I2C2" H 6528 3280 50  0000 L CNN
+F 1 "Conn_01x04_Female" H 6528 3235 50  0001 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 6500 3350 50  0001 C CNN
+F 3 "~" H 6500 3350 50  0001 C CNN
+	1    6500 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 6070E019
+P 6300 2600
+F 0 "#PWR?" H 6300 2450 50  0001 C CNN
+F 1 "+5V" V 6315 2728 50  0000 L CNN
+F 2 "" H 6300 2600 50  0001 C CNN
+F 3 "" H 6300 2600 50  0001 C CNN
+	1    6300 2600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6070EB2D
+P 6300 2900
+F 0 "#PWR?" H 6300 2650 50  0001 C CNN
+F 1 "GND" H 6305 2727 50  0000 C CNN
+F 2 "" H 6300 2900 50  0001 C CNN
+F 3 "" H 6300 2900 50  0001 C CNN
+	1    6300 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 60712570
+P 6300 3250
+F 0 "#PWR?" H 6300 3100 50  0001 C CNN
+F 1 "+5V" V 6315 3378 50  0000 L CNN
+F 2 "" H 6300 3250 50  0001 C CNN
+F 3 "" H 6300 3250 50  0001 C CNN
+	1    6300 3250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 607130CA
+P 6300 3550
+F 0 "#PWR?" H 6300 3300 50  0001 C CNN
+F 1 "GND" H 6305 3377 50  0000 C CNN
+F 2 "" H 6300 3550 50  0001 C CNN
+F 3 "" H 6300 3550 50  0001 C CNN
+	1    6300 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 60703C52
+P 5500 1550
+F 0 "#PWR?" H 5500 1400 50  0001 C CNN
+F 1 "+5V" V 5515 1678 50  0000 L CNN
+F 2 "" H 5500 1550 50  0001 C CNN
+F 3 "" H 5500 1550 50  0001 C CNN
+	1    5500 1550
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6070476F
+P 4250 1650
+F 0 "#PWR?" H 4250 1400 50  0001 C CNN
+F 1 "GND" H 4255 1477 50  0000 C CNN
+F 2 "" H 4250 1650 50  0001 C CNN
+F 3 "" H 4250 1650 50  0001 C CNN
+	1    4250 1650
+	0    1    1    0   
 $EndComp
 $EndSCHEMATC
