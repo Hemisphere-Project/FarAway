@@ -34,7 +34,7 @@
   )
 
   (setup
-    (last_trace_width 0.5)
+    (last_trace_width 0.25)
     (user_trace_width 0.5)
     (user_trace_width 1)
     (trace_clearance 0.2)
@@ -656,7 +656,7 @@
   (gr_text "Hémisphère / Chevalvert / 2021" (at 141.605 56.515 90) (layer F.SilkS) (tstamp 60702EEB)
     (effects (font (size 0.75 0.75) (thickness 0.1)))
   )
-  (gr_text "FAR AWAY" (at 139.065 60.325 90) (layer F.SilkS) (tstamp 60702EE8)
+  (gr_text "FAR AWAY" (at 139.065 60.96 90) (layer F.SilkS) (tstamp 60702EE8)
     (effects (font (size 1.5 1.5) (thickness 0.15)))
   )
   (gr_line (start 118.11 50.8) (end 118.11 49.53) (layer F.SilkS) (width 0.12) (tstamp 6070224B))
