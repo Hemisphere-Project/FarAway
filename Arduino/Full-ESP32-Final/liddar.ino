@@ -7,10 +7,10 @@ TFMPI2C tfmini;         // Create a TFMini-Plus I2C object
 #define TRIG2_DISTANCE 250  // GREEN
 
 #define PIN_SCL 33
-#define PIN_SDA 23
+#define PIN_SDA 32
 
-#define I2C_ADDR1 16
-#define I2C_ADDR2 37
+#define I2C_ADDR1 16    // BLUE
+#define I2C_ADDR2 37    // GREEN
 
 unsigned long Trigger1 = 0;
 unsigned long Trigger2 = 0;

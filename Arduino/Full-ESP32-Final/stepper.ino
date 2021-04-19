@@ -1,8 +1,8 @@
 #include "Arduino.h"
 
-int dirPin = 21;
-int pulPin = 25;
-int enablePin = 22;
+int pulPin = 13;
+int dirPin = 12;
+int enablePin = 14;
 
 int stepsPerRevolution = 25600*2;
 
