@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "chrono": "cpp",
+        "complex": "cpp"
+    }
+}
