@@ -1,0 +1,20 @@
+PINOUT
+
+
+MOTOR
+PUL --- 13
+DIR --- 12
+EN --- 14
+
+RED LED
+Data --- 27
+
+I2C
+SCL --- D33
+SDA --- 32
+
+SK
+Data --- 4
+
+AUDIO
+PWM --- 22
