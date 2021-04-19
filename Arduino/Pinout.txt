@@ -1,5 +1,3 @@
-PINOUT
-
 
 MOTOR
 PUL --- 13
@@ -10,7 +8,7 @@ RED LED
 Data --- 27
 
 I2C
-SCL --- D33
+SCL --- 33
 SDA --- 32
 
 SK
