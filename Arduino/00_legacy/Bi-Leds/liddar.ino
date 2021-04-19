@@ -51,11 +51,11 @@ bool liddar_check() {
     // CHECK TRIGGER1
     if( tfmini.getData(tfDist1) )      // Get data from the device.
     {
-        
+
         // Value changed: PRINT
-        if ( abs(lastDist1-tfDist1) > 3)  
-        {  
-            debugD( "TRIG1: %icm \r\n", tfDist1);   
+        if ( abs(lastDist1-tfDist1) > 3)
+        {
+            debugD( "TRIG1: %icm \r\n", tfDist1);
             lastDist1 = tfDist1;
         }
 
