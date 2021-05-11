@@ -32,13 +32,7 @@ class K32_anim_test : public K32_anim {
       this->all( CRGBW{0,0,0,255} );
       this->pause(stepMS);
 
-      this->all( CRGBW{255,0,0} );
-      this->pause(stepMS);
-
-      this->all( CRGBW{0,255,0} );
-      this->pause(stepMS);
-
-      this->all( CRGBW{0,0,255} );
+      this->all( CRGBW{255,255,0} );
       this->pause(stepMS);
 
       this->clear();

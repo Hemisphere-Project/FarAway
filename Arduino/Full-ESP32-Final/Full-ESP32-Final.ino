@@ -1,8 +1,9 @@
 #define FA_VERSION  1     // PROTO
+#define FA_VERSION  2     // PROTO PCB
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
-#define K32_SET_NODEID    0
+#define K32_SET_NODEID    1
 
 enum States {STOP, MOVE, FREE, END, ACCU, SLOW};
 
@@ -14,8 +15,9 @@ ESP_FlexyStepper stepper;
 #include "src/K32-lite/K32.h"
 #include "anim_leds.h"
 
+
 #define PIN_LEDSTRIP  4
-#define PIN_LEDDOT    27
+#define PIN_REDDOT    27
 #define STRIP_TYPE    LED_SK6812W_V1  // LED_WS2812_V1  LED_WS2812B_V1  LED_WS2812B_V2  LED_WS2812B_V3  LED_WS2813_V1  LED_WS2813_V2   LED_WS2813_V3  LED_WS2813_V4  LED_SK6812_V1  LED_SK6812W_V1,
 #define STRIP_SIZE    140
 
@@ -60,8 +62,21 @@ void setup()
     }
   });
 
+  // RED DOT
+  pinMode(PIN_REDDOT, OUTPUT);
+  k32->timer->every(1000, []() {
+    digitalWrite(PIN_REDDOT, HIGH);
+    delay(200);
+    digitalWrite(PIN_REDDOT, LOW);
+  });
+
   stepper_slowrun();
 
+  // AUDIO
+  audio_setup();
+  k32->timer->every(2000, []() {
+    if (stepper_state() == MOVE) audio_play();
+  });
 }
 
 int dec = 255;
@@ -78,6 +93,9 @@ void loop()
     k32->light->anim("color")->push(0, 0, 50, 0)->play();
     return;
   }
+
+  // AUDIO
+  audio_loop();
 
   if (liddar_check()) stepper_kick();
 

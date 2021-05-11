@@ -6,7 +6,7 @@ TFMPI2C tfmini;         // Create a TFMini-Plus I2C object
 #define TRIG1_DISTANCE 100  // BLUE
 #define TRIG2_DISTANCE 250  // GREEN
 
-#define PIN_SCL 33
+#define PIN_SCL 33 
 #define PIN_SDA 32
 
 #define I2C_ADDR1 16    // BLUE
@@ -96,7 +96,7 @@ bool liddar_check() {
             // Value changed: PRINT
             if ( abs(lastDist1-Filter1.Current()) > 10)  
             {  
-                debugD( "TRIG1: %icm \r\n", Filter1.Current());   
+                // debugD( "TRIG1: %icm \r\n", Filter1.Current());   
                 lastDist1 = Filter1.Current();
             }
 
@@ -117,7 +117,7 @@ bool liddar_check() {
             // Value changed: PRINT
             if ( abs(lastDist2-Filter2.Current()) > 10)  
             {  
-                debugD( "TRIG2: %icm \r\n", Filter2.Current());   
+                // debugD( "TRIG2: %icm \r\n", Filter2.Current());   
                 lastDist2 = Filter2.Current();
             }
 

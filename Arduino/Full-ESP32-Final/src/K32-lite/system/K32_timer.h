@@ -15,7 +15,7 @@ class K32_timer : public Timer {
             // Update task
             xTaskCreate(this->task,       // function
               "ktimer",                     // task name
-              2000,                         // stack memory
+              10000,                         // stack memory
               (void *)this,                 // args
               0,                            // priority
               NULL);                        // handler
