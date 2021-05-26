@@ -3,8 +3,8 @@
 #include <TFMPI2C.h>  // TFMini-Plus I2C Library v1.5.0
 TFMPI2C tfmini;         // Create a TFMini-Plus I2C object
 
-#define TRIG1_DISTANCE 100  // BLUE
-#define TRIG2_DISTANCE 250  // GREEN
+#define TRIG1_DISTANCE 50  // BLUE
+#define TRIG2_DISTANCE 100  // GREEN
 
 #define PIN_SCL 33 
 #define PIN_SDA 32
@@ -29,6 +29,7 @@ ExponentialFilter<long> Filter2(FilterWeight, TRIG2_DISTANCE+1);
 void liddar_setup() {
 
     Serial.println("LIDDAR: I2C begin");
+    delay(1000);
 
     // Init I2C
     Wire.setPins( PIN_SDA, PIN_SCL);
@@ -59,6 +60,8 @@ void liddar_setup() {
     pinMode( PIN_SCL, INPUT);
     delay( 10);
     
+    delay(1000);
+
     Wire.begin();
 
     // Check LIDDAR1

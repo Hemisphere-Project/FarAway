@@ -17,9 +17,11 @@ void audio_setup() {
 }
 
 void audio_play() {
-  audio_stop();
+  //audio_stop();
+  if (wav != NULL) return;
   Serial.println("AUDIO: start playing beep.wav");
-  file = new AudioFileSourceSPIFFS("/beep.wav");
+  String media = "/"+String(random(4,7))+"nofx.wav";
+  file = new AudioFileSourceSPIFFS(media.c_str());
   wav = new AudioGeneratorWAV();
   wav->begin(file, out);
 }

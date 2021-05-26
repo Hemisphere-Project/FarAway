@@ -12,9 +12,9 @@ float targetRun = 1.2;
 bool enableState = false;
 
 // set the speed and acceleration rates for the stepper motor
-int speed = stepsPerRevolution*0.3;     //*0.1; 
-int accel = 4*speed;                    //4*speed;
-int decel = 0.15*speed/targetRun;       //0.15*speed/targetRun;
+int speed = stepsPerRevolution*0.14;     //*0.1; 
+int accel = 0.055*stepsPerRevolution; //4*speed;
+int decel = 0.015*stepsPerRevolution/targetRun;       //0.15*speed/targetRun;
 
 unsigned long accu_trig;
 
@@ -23,6 +23,8 @@ void stepper_setup()
     // set enable Pin
     pinMode(enablePin, OUTPUT);
     digitalWrite(enablePin, enableState);
+    
+    stepper_enable(false);
 
     // connect and configure the stepper motor to its IO pins
     stepper.connectToPins(pulPin, dirPin);
@@ -51,11 +53,13 @@ void stepper_breaker()
 
 void stepper_offTask(void* param)
 {
-    stepper_enable(false);
+    if (state == MOVE || state == FREE) {
+        stepper_slowrun();
+        while(stepper_accumulate()) delay(10);
+    }
 
-    if (state == MOVE || state == FREE) while(stepper_accumulate()) delay(10);
-
-    if (state == ACCU || state == SLOW) stepper_slowrun();
+    stepper_slowrun();
+    
 
     vTaskDelete( NULL );
 }
@@ -70,6 +74,7 @@ bool stepper_kick()
         stepper.setAccelerationInStepsPerSecondPerSecond(accel);
         stepper.setDecelerationInStepsPerSecondPerSecond(decel);
         stepper.setTargetPositionRelativeInRevolutions(targetRun);
+        targetRun *= -1;
         state = MOVE;
         return true;
     }
@@ -86,18 +91,16 @@ bool stepper_accumulate()
 {
     if (state != ACCU) accu_trig = millis();
     state = ACCU;
-    return (millis()-accu_trig < 5000);
+    return (millis()-accu_trig < 1000);
 }
 
 void stepper_slowrun()
 {
     state = SLOW;
 
-    stepper.setSpeedInStepsPerSecond(speed/50);
+    stepper.setSpeedInStepsPerSecond(speed * (0.9+random(30)/100) / 12);
     stepper.setAccelerationInStepsPerSecondPerSecond(accel/10);
     stepper.setDecelerationInStepsPerSecondPerSecond(accel/10);
-
-    targetRun *= -1;
 
     float target = targetRun*random(5,7)/abs(targetRun);
     stepper.setTargetPositionRelativeInRevolutions(target);

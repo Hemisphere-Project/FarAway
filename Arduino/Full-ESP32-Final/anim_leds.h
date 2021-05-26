@@ -15,7 +15,8 @@ public:
     // Internal modulators
     void init () 
     {
-        this->mod("chase", new K32_mod_sinus)->maxi(this->size()-1)->play();
+        this->mod("chase", new K32_mod_isawtooth)->maxi(this->size()-1)->play();
+        this->mod("bleep", new K32_mod_pulse)->mini(0)->maxi(255)->period(1000)->param(0,0)->param(1,10)->play();
     }
 
     // Loop
@@ -33,16 +34,25 @@ public:
         // Size
         int& sizez = data[1];
 
-        CRGBW color(255,255,255,255);
 
-        // this->pixel( pos, CRGBW::GhostWhite);
+        int red = 100;
+        CRGBW color(red,0,0,0);
+
         this->all(color);
 
+        // BLACK CHASER
         int amp = sizez/2;
         for (int k=0; k < amp; k++) {
-            this->pixel( pos-k, CRGBW::Black);
-            this->pixel( pos+k, CRGBW::Black);
+            CRGBW colorChase( max( red,  255 * (amp-k)/amp ) ,0,0,0);
+            this->pixel( pos-k, colorChase);
+            this->pixel( pos+k, colorChase);
         }
+
+        // WHITE HEAD
+        // CRGBW dot(mod("bleep")->value(), 0, 0, 0);
+        // this->pixel( 0, dot);
+        // this->pixel( 1, dot);
+        // this->pixel( 2, CRGBW::Black);
 
 
         lastPos = pos;
