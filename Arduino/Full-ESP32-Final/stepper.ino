@@ -11,15 +11,22 @@ States state = STOP;
 float targetRun = 1.2;
 bool enableState = false;
 
-// set the speed and acceleration rates for the stepper motor
-int speed = stepsPerRevolution*0.14;     //*0.1; 
-int accel = 0.055*stepsPerRevolution; //4*speed;
-int decel = 0.015*stepsPerRevolution/targetRun;       //0.15*speed/targetRun;
+int speed; 
+int accel;
+int decel; 
 
 unsigned long accu_trig;
 
 void stepper_setup() 
 {
+    // set the speed and acceleration rates for the stepper motor
+    speed = stepsPerRevolution*0.14;                //*0.14;
+
+    accel = 0.055*stepsPerRevolution;                 // WARNING: 0.035 on ESP-6 !
+    if(k32->system->id() == 6) accel = 0.035*stepsPerRevolution;  // DIRTY PATCH 
+
+    decel = 0.015*stepsPerRevolution/targetRun;       //0.15*speed/targetRun;
+
     // set enable Pin
     pinMode(enablePin, OUTPUT);
     digitalWrite(enablePin, enableState);

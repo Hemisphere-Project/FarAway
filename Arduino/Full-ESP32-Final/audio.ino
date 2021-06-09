@@ -1,11 +1,16 @@
 #include "SPIFFS.h"
 #include "AudioFileSourceSPIFFS.h"
-#include "AudioGeneratorWAV.h"
+// #include "AudioGeneratorWAV.h"
+#include "AudioGeneratorMP3.h"
 #include "AudioOutputI2SNoDAC.h"
 
-AudioGeneratorWAV *wav = NULL;
+// AudioGeneratorWAV *wav = NULL;
+AudioGeneratorMP3 *wav = NULL;
 AudioFileSourceSPIFFS *file  = NULL;
 AudioOutputI2S *out = NULL;
+
+long lastStart = 0;
+bool lastLong = false;
 
 void audio_setup() {
   SPIFFS.begin();
@@ -13,16 +18,31 @@ void audio_setup() {
   audioLogger = &Serial;
   out = new AudioOutputI2SNoDAC();
   out->SetPinout(26,25,22);
-  out->SetGain(1.5);
+  out->SetGain(1.9);
 }
 
-void audio_play() {
-  //audio_stop();
-  if (wav != NULL) return;
+void audio_play( bool longNote ) {
+  // if (wav != NULL) return;
+  if (wav != NULL) {
+    // if (millis()-lastStart > 6000) audio_stop();
+    if (!lastLong) return;  // SHORT IS PLAYING
+    else if (millis()-lastStart < 1500) return; // WAS PLAYING LONG for less than 1500
+  }
+  lastStart = millis();
+  lastLong = longNote;
+  
+  audio_stop();
+
   Serial.println("AUDIO: start playing beep.wav");
-  String media = "/"+String(random(4,7))+"nofx.wav";
+  // String media = "/"+String(random(4,7))+"nofx.wav";
+  String media; 
+  media = "/"+String(random(1,4)); 
+  if (longNote) media += "long";
+  else media += "small";
+  media += ".mp3";
+
   file = new AudioFileSourceSPIFFS(media.c_str());
-  wav = new AudioGeneratorWAV();
+  wav = new AudioGeneratorMP3();
   wav->begin(file, out);
 }
 

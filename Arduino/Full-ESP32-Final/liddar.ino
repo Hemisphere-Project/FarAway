@@ -3,8 +3,8 @@
 #include <TFMPI2C.h>  // TFMini-Plus I2C Library v1.5.0
 TFMPI2C tfmini;         // Create a TFMini-Plus I2C object
 
-#define TRIG1_DISTANCE 50  // BLUE
-#define TRIG2_DISTANCE 100  // GREEN
+#define TRIG1_DISTANCE 40  // BLUE
+#define TRIG2_DISTANCE 200  // GREEN
 
 #define PIN_SCL 33 
 #define PIN_SDA 32

@@ -1,10 +1,12 @@
 #define FA_VERSION  1     // PROTO
 #define FA_VERSION  2     // PROTO PCB
 #define FA_VERSION  5     // WEDNESDAY
+#define FA_VERSION  6     // INSTALL METZ
+// #define FA_VERSION  7     // METZ
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
-// #define K32_SET_NODEID    14
+// #define K32_SET_NODEID    1
 
 enum States {STOP, MOVE, FREE, END, ACCU, SLOW};
 
@@ -73,9 +75,6 @@ void setup()
 
   // AUDIO
   audio_setup();
-  // k32->timer->every(2000, []() {
-  //   if (stepper_state() == MOVE) audio_play();
-  // });
 }
 
 int dec = 255;
@@ -97,8 +96,8 @@ void loop()
   audio_loop();
 
   if (liddar_check()) {
+    audio_play( (stepper_state() == SLOW) );
     stepper_kick();
-    audio_play();
   }
 
   float speed = stepper.getCurrentVelocityInStepsPerSecond();
@@ -108,7 +107,6 @@ void loop()
   if (lastSpeed<speed) master = 255;            // Accelerate -> full brightness
   else {
     master = min(255, 255*speed/maxSpeed);   // Decelerate -> proportional brightness
-    //if (stepper_time() > 2000) stepper_enable(false);
   }
   lastSpeed = speed;
 
@@ -116,13 +114,7 @@ void loop()
     k32->light->anim("chaser")->stop();
     k32->light->anim("color")->push(master, master, master, master)->play();
   }
-  // else if (stepper_state() == ACCU) {
-  //   k32->light->anim("color")->stop();
-  //   k32->light->anim("chaser")->push(2000, STRIP_SIZE/2, 40)->play();
-  // }
   else {
-    // k32->light->anim("chaser")->stop();
-    // k32->light->anim("color")->push(100, 0, 0, 0)->play();
     k32->light->anim("color")->stop();
     k32->light->anim("chaser")->push(6000, 10)->play();
   }
