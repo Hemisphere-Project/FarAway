@@ -7,6 +7,7 @@ int enablePin = 14;
 int stepsPerRevolution = 25600*2;
 
 States state = STOP;
+unsigned long lastRunAt = 0;
 
 float targetRun = 1.2;
 bool enableState = false;
@@ -83,6 +84,7 @@ bool stepper_kick()
         stepper.setTargetPositionRelativeInRevolutions(targetRun);
         targetRun *= -1;
         state = MOVE;
+        lastRunAt = millis();
         return true;
     }
     return false;
@@ -123,4 +125,8 @@ void stepper_enable(bool doEnable)
 
 States stepper_state() {
     return state;
+}
+
+void stepper_shake() {
+    if ((millis() - lastRunAt) > 1000*60*15) ESP.restart();  // No trigger since too long: restart ESP
 }

@@ -2,7 +2,7 @@
 #define FA_VERSION  2     // PROTO PCB
 #define FA_VERSION  5     // WEDNESDAY
 #define FA_VERSION  6     // INSTALL METZ
-// #define FA_VERSION  7     // METZ
+#define FA_VERSION  8     // METZ AOUT (watchdog stepper_shake)
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
@@ -50,9 +50,9 @@ void setup()
   k32->light->addStrip(PIN_LEDSTRIP, (led_types)STRIP_TYPE, STRIP_SIZE);
 
   // ANIMATIONS  
-  k32->light->anim( 0, "test0",   new K32_anim_test )->push(200)->master(60)->play()->wait();
-  k32->light->anim( 0, "color",   new K32_anim_color)->push(0,0,0,0)->play();
-  k32->light->anim( 0, "chaser",   new Anim_chaser)->push(1000, 5, 500);
+  // k32->light->anim( 0, "test0",   new K32_anim_test )->push(200)->master(60)->play()->wait();
+  k32->light->anim( 0, "color",   new K32_anim_color)->push(0,0,0,0);
+  k32->light->anim( 0, "chaser",   new Anim_chaser)->push(6000, 10, 500)->play();
 
   // DEBUG
   k32->timer->every(300, []() {
@@ -118,6 +118,9 @@ void loop()
     k32->light->anim("color")->stop();
     k32->light->anim("chaser")->push(6000, 10)->play();
   }
+
+  // Reset if no activity for too long
+  stepper_shake();
 
   delay(2);
 }
