@@ -1,6 +1,0 @@
-#!/bin/bash
-cd "$(dirname "$0")"
-export PATH="$HOME/.espressif/tools/xtensa-esp32-elf/1.22.0-96-g2852398-5.2.0/xtensa-esp32-elf/bin:$PATH"; 
-IDF_PATH=$HOME/Programs/esp-idf
-
-make menuconfig
