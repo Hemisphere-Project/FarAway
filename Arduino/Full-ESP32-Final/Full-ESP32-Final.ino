@@ -3,6 +3,7 @@
 #define FA_VERSION  5     // WEDNESDAY
 #define FA_VERSION  6     // INSTALL METZ
 #define FA_VERSION  8     // METZ AOUT (watchdog stepper_shake)
+#define FA_VERSION  9     // PRE-BXL (config watchdog)
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
@@ -18,6 +19,7 @@ ESP_FlexyStepper stepper;
 #include "src/K32-lite/K32.h"
 #include "anim_leds.h"
 
+#define TRIGGER_WATCH_TIME 15   // Restart ESP if not trigger for that time (in minutes)   // 0 = disable watchdog restart
 
 #define PIN_LEDSTRIP  4
 #define PIN_REDDOT    27
@@ -52,6 +54,7 @@ void setup()
   // ANIMATIONS  
   // k32->light->anim( 0, "test0",   new K32_anim_test )->push(200)->master(60)->play()->wait();
   k32->light->anim( 0, "color",   new K32_anim_color)->push(0,0,0,0);
+  k32->light->anim( 0, "runner",   new Anim_runner)->push(0);
   k32->light->anim( 0, "chaser",   new Anim_chaser)->push(6000, 10, 500)->play();
 
   // DEBUG
@@ -88,6 +91,7 @@ void loop()
     stepper_breaker();
     delay(1000);
     k32->light->anim("chaser")->stop();
+    k32->light->anim("runner")->stop();
     k32->light->anim("color")->push(0, 0, 50, 0)->play();
     return;
   }
@@ -95,9 +99,16 @@ void loop()
   // AUDIO
   audio_loop();
 
+  // TRIG
   if (liddar_check()) {
     audio_play( (stepper_state() == SLOW) );
-    stepper_kick();
+
+    if (stepper_state() == SLOW) 
+    {
+      stepper_kick();
+      k32->light->anim("runner")->mod("load")->trigger();
+      maxSpeed = 1;
+    }
   }
 
   float speed = stepper.getCurrentVelocityInStepsPerSecond();
@@ -112,15 +123,18 @@ void loop()
 
   if (stepper_state() == MOVE || stepper_state() == FREE) {
     k32->light->anim("chaser")->stop();
-    k32->light->anim("color")->push(master, master, master, master)->play();
+    // k32->light->anim("color")->push(master, master, master, master)->play();
+    k32->light->anim("runner")->push(master)->play();
   }
   else {
-    k32->light->anim("color")->stop();
+    // k32->light->anim("color")->stop();
+    k32->light->anim("runner")->stop();
     k32->light->anim("chaser")->push(6000, 10)->play();
   }
 
-  // Reset if no activity for too long
-  stepper_shake();
+  // Reset if no trigger for too long
+  if (TRIGGER_WATCH_TIME > 0)
+    stepper_watchdog(TRIGGER_WATCH_TIME);
 
   delay(2);
 }

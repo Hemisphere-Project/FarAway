@@ -58,3 +58,39 @@ public:
         lastPos = pos;
     }
 };
+
+
+
+class Anim_runner : public K32_anim
+{
+public:
+
+    int lastPos = 0;
+
+    // Internal modulators
+    void init () 
+    {
+        this->mod("load", new K32_mod_fadein)->maxi(this->size()-1)->period( 1500 )->play();
+    }
+
+    // Loop
+    void draw(int data[ANIM_DATA_SLOTS])
+    {   
+        // Clear
+        this->clear();
+
+        // Get current position
+        int pos = mod("load")->value();
+
+        // Size
+        int& master = data[0];
+
+        CRGBW color(master, master, master, master);
+
+        this->all(CRGBW::Black);
+
+        // Draw WHITE
+        for (int k=0; k < pos; k++) this->pixel( k, color);
+
+    }
+};

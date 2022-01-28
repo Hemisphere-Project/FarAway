@@ -56,7 +56,7 @@ void stepper_breaker()
     //     stepper.setTargetPositionToStop();
     // }
     stepper_enable(false);
-    stepper.stopService();
+    if (stepper.isStartedAsService()) stepper.stopService();
 }
 
 void stepper_offTask(void* param)
@@ -127,6 +127,8 @@ States stepper_state() {
     return state;
 }
 
-void stepper_shake() {
-    if ((millis() - lastRunAt) > 1000*60*15) ESP.restart();  // No trigger since too long: restart ESP
+void stepper_watchdog(int timeoutMinutes) {
+    if (timeoutMinutes > 0)
+        if ((millis() - lastRunAt) > 1000*60*timeoutMinutes) 
+            ESP.restart();  // No trigger since too long: restart ESP
 }
