@@ -13,7 +13,7 @@ enum States {STOP, MOVE, FREE, END, ACCU, SLOW};
 
 #include "debug.h"
 
-#include <ESP_FlexyStepper.h>   // https://github.com/pkerspe/ESP-FlexyStepper
+#include <ESP_FlexyStepper.h>   // https://github.com/pkerspe/ESP-FlexyStepper#1.4.3   !!! WARNING : use 1.4.3 version !!!!
 ESP_FlexyStepper stepper;
 
 #include "src/K32-lite/K32.h"
@@ -33,6 +33,10 @@ float lastSpeed = 0;
 float debugSpeed = -1;
 int master = 0;
 
+unsigned long lastDot = 0;
+bool redDotState = false;
+
+
 void setup()
 {
   // K32 Lib
@@ -42,7 +46,9 @@ void setup()
   liddar_setup();
 
   // STEPPER
-  stepper_setup();
+  if (k32->system->id() == 6) stepper_setup(0.035); // Accel factor reduced for ESP-6
+  else stepper_setup(0.055);  
+
 
   // WIFI
   k32->init_wifi("faraway-v"+String(FA_VERSION));
@@ -68,11 +74,13 @@ void setup()
 
   // RED DOT
   pinMode(PIN_REDDOT, OUTPUT);
-  k32->timer->every(1000, []() {
-    digitalWrite(PIN_REDDOT, HIGH);
-    delay(100);
-    digitalWrite(PIN_REDDOT, LOW);
-  });
+  digitalWrite(PIN_REDDOT, HIGH);
+
+  // k32->timer->every(1000, []() {
+  //   digitalWrite(PIN_REDDOT, HIGH);
+  //   delay(100);
+  //   digitalWrite(PIN_REDDOT, LOW);
+  // });
 
   stepper_slowrun();
 
@@ -82,6 +90,7 @@ void setup()
 
 int dec = 255;
 int inc = -1;
+
 
 void loop()
 {
@@ -94,6 +103,20 @@ void loop()
     k32->light->anim("runner")->stop();
     k32->light->anim("color")->push(0, 0, 50, 0)->play();
     return;
+  }
+
+  // RED DOT
+  if((millis() - lastDot) > 1000) 
+  {
+    if (!redDotState) {
+      digitalWrite(PIN_REDDOT, HIGH);
+      redDotState = true;
+    }
+    else if((millis() - lastDot) > 1100) {
+      digitalWrite(PIN_REDDOT, LOW);
+      redDotState = false;
+      lastDot = millis();
+    }
   }
 
   // AUDIO

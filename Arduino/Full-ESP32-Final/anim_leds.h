@@ -70,7 +70,7 @@ public:
     // Internal modulators
     void init () 
     {
-        this->mod("load", new K32_mod_fadein)->maxi(this->size()-1)->period( 1500 )->play();
+        this->mod("load", new K32_mod_fadein)->maxi(this->size()-1)->period( 800 )->play();
     }
 
     // Loop
