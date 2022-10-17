@@ -94,3 +94,22 @@ public:
 
     }
 };
+
+
+//
+// FULLCOLOR
+//
+class Anim_color : public K32_anim {
+  public:
+
+    // Setup
+    void init() {}
+
+    // Loop
+    void draw(int data[ANIM_DATA_SLOTS])
+    {
+      // debugD("ANIM color: %d %d %d %d", data[0], data[1], data[2], data[3]);
+      CRGBW color {data[0], data[1], data[2], data[3]};
+      this->all( color );
+    };
+};

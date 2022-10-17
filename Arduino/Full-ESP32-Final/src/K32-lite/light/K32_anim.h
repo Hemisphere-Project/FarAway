@@ -12,8 +12,8 @@
 #include "K32_ledstrip.h"
 #include "K32_modulator.h"
 
-#include "../system/K32_debug.h"
-extern K32_debug Debug;
+// #include "../system/K32_debug.h"
+// extern K32_debug Debug;
 
 //
 // BASE ANIM

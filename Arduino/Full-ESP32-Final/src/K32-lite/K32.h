@@ -14,10 +14,9 @@
 
 #include "../../debug.h"
 #include "network/K32_wifi.h"
-#include "system/K32_timer.h"
 #include "system/K32_system.h"
 #include "light/K32_light.h"
-#include "system/K32_debug.h"
+// #include "system/K32_debug.h"
 
 
 
@@ -31,7 +30,6 @@ public:
 
         // SYSTEM
         system = new K32_system();
-        timer = new K32_timer();
         light = new K32_light();
 
 // Save NODE_ID in flash
@@ -56,7 +54,6 @@ public:
     }
 
 
-    K32_timer* timer        = NULL;
     K32_system *system      = NULL;
     K32_wifi *wifi          = NULL;
     K32_light *light        = NULL;          
@@ -66,8 +63,6 @@ public:
         if (nameAlias != "")
             nameAlias = "-" + nameAlias;
         wifi = new K32_wifi(system->name() + nameAlias);
-
-        Debug.setWifi(wifi);
     }
 
 };

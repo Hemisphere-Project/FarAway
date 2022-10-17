@@ -288,7 +288,7 @@ void K32_wifi::task(void *parameter)
     }
 
     // RECONNECT
-    if (that->engageConnection != 0) {
+    if (that->engageConnection != 0 && that->retry < 5) {
       if ((millis() - that->engageConnection) > KWIFI_CONNECTION_TIMEOUT)
       {
         ++that->retry;
@@ -297,10 +297,12 @@ void K32_wifi::task(void *parameter)
 
         WiFi.disconnect(true);
         WiFi.mode(WIFI_OFF);
-        vTaskDelay(pdMS_TO_TICKS(100));
 
-        Serial.printf("WIFI: reconnecting.. %i\n", that->retry);
-        that->connect();
+        if (that->retry < 5) {
+          vTaskDelay(pdMS_TO_TICKS(100));
+          Serial.printf("WIFI: reconnecting.. %i\n", that->retry);
+          that->connect();
+        }
       }
     }
 

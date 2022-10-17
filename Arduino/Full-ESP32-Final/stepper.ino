@@ -127,8 +127,8 @@ States stepper_state() {
     return state;
 }
 
-void stepper_watchdog(int timeoutMinutes) {
-    if (timeoutMinutes > 0)
-        if ((millis() - lastRunAt) > 1000*60*timeoutMinutes) 
-            ESP.restart();  // No trigger since too long: restart ESP
+bool stepper_watchdog(int timeoutSeconds) {
+    if (timeoutSeconds > 0)
+        if ((millis() - lastRunAt) > 1000*timeoutSeconds) return false;
+    return true;
 }

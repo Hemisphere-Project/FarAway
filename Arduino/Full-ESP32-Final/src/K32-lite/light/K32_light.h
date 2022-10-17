@@ -26,9 +26,6 @@
 // NOTE: to be able to use an animation, it must be included here
 //
 
-#include "animations/K32_anim_basics.h"
-#include "animations/K32_anim_charge.h"
-
 struct stripcopy
 {
   int srcStrip;
