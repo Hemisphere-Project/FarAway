@@ -4,7 +4,7 @@
 #define FA_VERSION  6     // INSTALL METZ
 #define FA_VERSION  8     // METZ AOUT (watchdog stepper_shake)
 #define FA_VERSION  9     // PRE-BXL (config watchdog)
-#define FA_VERSION  10    // FIX Watchdog
+#define FA_VERSION  11    // FIX Watchdog
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
@@ -51,19 +51,19 @@ void setup()
 
   // STEPPER
   if (k32->system->id() == 6) stepper_setup(0.035); // Accel factor reduced for ESP-6
-  else stepper_setup(0.055);  
+  else stepper_setup(0.055);
 
 
   // WIFI
-  k32->init_wifi("faraway-v"+String(FA_VERSION));
+  k32->init_wifi("faraway-v" + String(FA_VERSION));
   k32->wifi->connect("hmsphr", "hemiproject");
 
   // STRIP
   k32->light->addStrip(PIN_LEDSTRIP, (led_types)STRIP_TYPE, STRIP_SIZE);
 
-  // ANIMATIONS  
+  // ANIMATIONS
   // k32->light->anim( 0, "test0",   new K32_anim_test )->push(200)->master(60)->play()->wait();
-  k32->light->anim( 0, "color",    new Anim_color)->push(0,0,0,0);
+  k32->light->anim( 0, "color",    new Anim_color)->push(0, 0, 0, 0);
   k32->light->anim( 0, "runner",   new Anim_runner)->push(0);
   k32->light->anim( 0, "chaser",   new Anim_chaser)->push(6000, 10, 500)->play();
 
@@ -78,8 +78,8 @@ void setup()
 
   // WDT
   esp_task_wdt_init(3, true); //enable panic so ESP32 restarts
-  esp_task_wdt_add(NULL); 
-  
+  esp_task_wdt_add(NULL);
+
   LOG("READY");
 }
 
@@ -93,21 +93,26 @@ void loop()
   if (k32->wifi->otaState == ERROR) ESP.restart();
   else if (k32->wifi->otaState > OFF) {
     stepper_breaker();
-    delay(1000);
     k32->light->anim("chaser")->stop();
     k32->light->anim("runner")->stop();
     k32->light->anim("color")->push(0, 0, 50, 0)->play();
+
+    for (int k = 0; k < 10; k++) {
+      esp_task_wdt_reset();
+      delay(100);
+    }
+
     return;
   }
 
   // RED DOT
-  if((millis() - lastDot) > 1000) 
+  if ((millis() - lastDot) > 1000)
   {
     if (!redDotState) {
       digitalWrite(PIN_REDDOT, HIGH);
       redDotState = true;
     }
-    else if((millis() - lastDot) > 1100) {
+    else if ((millis() - lastDot) > 1100) {
       digitalWrite(PIN_REDDOT, LOW);
       redDotState = false;
       lastDot = millis();
@@ -121,7 +126,7 @@ void loop()
   if (liddar_check()) {
     audio_play( (stepper_state() == SLOW) );
 
-    if (stepper_state() == SLOW) 
+    if (stepper_state() == SLOW)
     {
       stepper_kick();
       k32->light->anim("runner")->mod("load")->trigger();
@@ -133,9 +138,9 @@ void loop()
   if (speed < 0) speed *= -1;
   if (speed > maxSpeed) maxSpeed = speed;
 
-  if (lastSpeed<speed) master = 255;            // Accelerate -> full brightness
+  if (lastSpeed < speed) master = 255;          // Accelerate -> full brightness
   else {
-    master = min(255, 255*speed/maxSpeed);   // Decelerate -> proportional brightness
+    master = min(255, 255 * speed / maxSpeed); // Decelerate -> proportional brightness
   }
   lastSpeed = speed;
 
