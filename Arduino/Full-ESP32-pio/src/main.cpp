@@ -56,8 +56,8 @@ void setup()
   liddar_setup();
 
   // STEPPER
-  if (k32->system->id() == 6) stepper_setup(0.025); // Accel factor reduced for ESP-6
-  else stepper_setup(0.055);
+  if (k32->system->id() == 6) stepper_setup(); // Accel factor reduced for ESP-6
+  else stepper_setup();
 
 
   // WIFI

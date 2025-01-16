@@ -12,17 +12,17 @@ unsigned long lastRunAt = 0;
 float targetRun = 1.2;
 bool enableState = false;
 
-int speed; 
+int speed;
 int accel;
-int decel; 
+int decel;
 
 unsigned long accu_trig;
 
-void stepper_enable(bool doEnable) 
+void stepper_enable(bool doEnable)
 {
     enableState = doEnable;
     digitalWrite(enablePin, !enableState);
-} 
+}
 
 void stepper_breaker()
 {
@@ -62,25 +62,24 @@ void stepper_offTask(void* param)
     }
 
     stepper_slowrun();
-    
+
 
     vTaskDelete( NULL );
 }
 
-void stepper_setup(float accelFactor) 
+void stepper_setup()
 {
     // set the speed and acceleration rates for the stepper motor
     speed = stepsPerRevolution*0.14;                //*0.14;
 
-    accel = accelFactor*stepsPerRevolution;                 
-    // if(k32->system->id() == 6) accel = 0.025*stepsPerRevolution;  // DIRTY PATCH 
+    accel = 0.055*stepsPerRevolution;
 
     decel = 0.015*stepsPerRevolution/targetRun;       //0.15*speed/targetRun;
 
     // set enable Pin
     pinMode(enablePin, OUTPUT);
     digitalWrite(enablePin, enableState);
-    
+
     stepper_enable(false);
 
     // connect and configure the stepper motor to its IO pins
@@ -105,8 +104,16 @@ bool stepper_kick()
     if (state == SLOW) {
         stepper_enable(true);
         stepper.setSpeedInStepsPerSecond(speed);
-        stepper.setAccelerationInStepsPerSecondPerSecond(accel);
-        stepper.setDecelerationInStepsPerSecondPerSecond(decel);
+
+        if (k32->system->id() == 6) { // Accel factor reduced for ESP-6
+            stepper.setAccelerationInStepsPerSecondPerSecond(accel/5);
+            stepper.setDecelerationInStepsPerSecondPerSecond(accel/5);
+        }
+        else {
+            stepper.setAccelerationInStepsPerSecondPerSecond(accel);
+            stepper.setDecelerationInStepsPerSecondPerSecond(decel);
+        }
+
         stepper.setTargetPositionRelativeInRevolutions(targetRun);
         targetRun *= -1;
         state = MOVE;
