@@ -38,11 +38,17 @@ void stepper_slowrun()
 {
     state = SLOW;
 
-    stepper.setSpeedInStepsPerSecond(speed * (0.9+random(30)/100) / 12);
+    if (k32->system->id() == 6) 
+        stepper.setSpeedInStepsPerSecond(speed * 0.1);
+    else 
+        stepper.setSpeedInStepsPerSecond(speed * (0.9+random(30)/100) / 12);
+
     stepper.setAccelerationInStepsPerSecondPerSecond(accel/10);
     stepper.setDecelerationInStepsPerSecondPerSecond(accel/10);
 
     float target = targetRun*random(5,7)/abs(targetRun);
+    // if (k32->system->id() == 6)
+    //     target = targetRun*5/abs(targetRun);
     stepper.setTargetPositionRelativeInRevolutions(target);
     stepper_enable(true);
 }
