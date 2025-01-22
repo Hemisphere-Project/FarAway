@@ -7,6 +7,7 @@
 #define FA_VERSION  9     // PRE-BXL (config watchdog)
 #define FA_VERSION  11    // FIX Watchdog
 #define FA_VERSION  12    // PIO version
+#define FA_VERSION  13    // Fix flexyCore
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
