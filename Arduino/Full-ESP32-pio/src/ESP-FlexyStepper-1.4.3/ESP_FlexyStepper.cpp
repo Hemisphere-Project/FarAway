@@ -94,22 +94,27 @@ ESP_FlexyStepper::~ESP_FlexyStepper()
 void ESP_FlexyStepper::startAsService(void)
 {
   disableCore0WDT(); // we have to disable the Watchdog timer to prevent it from rebooting the ESP all the time another option would be to add a vTaskDelay but it would slow down the stepper
-  xTaskCreate(
+  xTaskCreatePinnedToCore(
       ESP_FlexyStepper::taskRunner, /* Task function. */
       "FlexyStepper",               /* String with name of task (by default max 16 characters long) */
-      2000,                         /* Stack size in bytes. */
+      5000,                         /* Stack size in bytes. */
       this,                         /* Parameter passed as input of the task */
-      1,                            /* Priority of the task, 1 seems to work just fine for us */
-      &this->xHandle);              /* Task handle. */
+      10,                            /* Priority of the task, 1 seems to work just fine for us */
+      &this->xHandle,               /* Task handle. */
+      0);                           /* Core 0*/
 }
 
 void ESP_FlexyStepper::taskRunner(void *parameter)
 {
   ESP_FlexyStepper *stepperRef = static_cast<ESP_FlexyStepper *>(parameter);
-  for (;;)
+  while (true)
   {
-    stepperRef->processMovement();
-    //vTaskDelay(1); // This would be a working solution to prevent the WDT to fire (if not disabled, yet it will cause noticeably less smooth stepper movements / lower frequencies)
+    for (int i = 0; i < 100000; i++)
+    {
+      stepperRef->processMovement();
+      // vTaskDelay(1); // This would be a working solution to prevent the WDT to fire (if not disabled, yet it will cause noticeably less smooth stepper movements / lower frequencies)
+    }
+    vTaskDelay(1); // let Core0 do his thing (like OTA) from time to time
   }
 }
 
@@ -1051,29 +1056,29 @@ void ESP_FlexyStepper::setTargetPositionToStop()
 //
 bool ESP_FlexyStepper::processMovement(void)
 {
-  if (emergencyStopActive)
-  {
-    //abort potentially running homing movement
-    this->isOnWayToHome = false;
-    this->isOnWayToLimit = false;
+  // if (emergencyStopActive)
+  // {
+  //   //abort potentially running homing movement
+  //   this->isOnWayToHome = false;
+  //   this->isOnWayToLimit = false;
 
-    currentStepPeriod_InUS = 0.0;
-    nextStepPeriod_InUS = 0.0;
-    directionOfMotion = 0;
-    targetPosition_InSteps = currentPosition_InSteps;
+  //   currentStepPeriod_InUS = 0.0;
+  //   nextStepPeriod_InUS = 0.0;
+  //   directionOfMotion = 0;
+  //   targetPosition_InSteps = currentPosition_InSteps;
 
-    //activate brake (if configured) driectly due to emergency stop if not already active
-    if (this->_isBrakeConfigured && !this->_isBrakeActive)
-    {
-      this->activateBrake();
-    }
+  //   //activate brake (if configured) driectly due to emergency stop if not already active
+  //   if (this->_isBrakeConfigured && !this->_isBrakeActive)
+  //   {
+  //     this->activateBrake();
+  //   }
 
-    if (!this->holdEmergencyStopUntilExplicitRelease)
-    {
-      emergencyStopActive = false;
-    }
-    return (true);
-  }
+  //   if (!this->holdEmergencyStopUntilExplicitRelease)
+  //   {
+  //     emergencyStopActive = false;
+  //   }
+  //   return (true);
+  // }
 
   //check if delayed brake shall be engaged / released
   if (this->_timeToEngangeBrake != LONG_MAX && this->_timeToEngangeBrake <= millis())

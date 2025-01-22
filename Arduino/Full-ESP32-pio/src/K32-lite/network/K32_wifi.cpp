@@ -68,7 +68,7 @@ K32_wifi::K32_wifi(String nameDevice) : nameDevice(nameDevice)
               (void *)this, // args
               1,            // priority
               NULL,              // handler
-              0);                // core
+              1);                // core
 };
 
 void K32_wifi::ota(bool enable)

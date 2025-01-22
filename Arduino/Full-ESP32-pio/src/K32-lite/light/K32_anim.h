@@ -90,12 +90,12 @@ class K32_anim {
 
       xSemaphoreTake(this->wait_lock, portMAX_DELAY);
       xSemaphoreTake(this->bufferInUse, portMAX_DELAY);
-      xTaskCreate( this->animate,           // function
+      xTaskCreatePinnedToCore( this->animate,           // function
                     "anim_task",            // task name
                     5000,                   // stack memory
                     (void*)this,            // args
                     3,                      // priority
-                    &this->animateHandle ); // handler
+                    &this->animateHandle, 1); // handler
       LOGF("ANIM: %s play \n", this->name().c_str() );
       
       return this;

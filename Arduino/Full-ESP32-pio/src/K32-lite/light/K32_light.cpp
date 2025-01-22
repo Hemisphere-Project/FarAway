@@ -12,12 +12,12 @@ K32_light::K32_light()
   digitalLeds_init();
 
   LOG("start light");
-   xTaskCreate( this->refresh,           // function
+   xTaskCreatePinnedToCore( this->refresh,           // function
                     "modulate_task",            // task name
                     10000,                   // stack memory
                     (void*)this,            // args
                     3,                      // priority
-                    NULL );                 // handler
+                    NULL, 1);                 // handler
 }
 
 void K32_light::addStrip(const int pin, led_types type, int size)

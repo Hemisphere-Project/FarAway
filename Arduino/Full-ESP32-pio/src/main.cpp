@@ -40,6 +40,8 @@ float lastSpeed = 0;
 float debugSpeed = -1;
 int master = 0;
 
+int lastTrigger = 0;
+
 unsigned long lastDot = 0;
 bool redDotState = false;
 
@@ -129,6 +131,8 @@ void loop()
   audio_loop();
 
   // TRIG
+  // if (millis()-lastTrigger > 15000) { lastTrigger = millis();
+
   if (liddar_check()) {
     audio_play( (stepper_state() == SLOW) );
 
@@ -140,6 +144,7 @@ void loop()
     }
   }
 
+  master = 255;
   float speed = stepper.getCurrentVelocityInStepsPerSecond();
   if (speed < 0) speed *= -1;
   if (speed > maxSpeed) maxSpeed = speed;
@@ -162,7 +167,8 @@ void loop()
   }
 
   // Feed dog
-  if ( stepper_watchdog(TRIGGER_WATCH_TIME) ) esp_task_wdt_reset();
+  if ( stepper_watchdog(TRIGGER_WATCH_TIME) ) 
+    esp_task_wdt_reset();
 
   delay(2);
 }

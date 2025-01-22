@@ -195,13 +195,18 @@ if __name__ == '__main__':
         print("\t -t type")
         print("\t -i ip")
         print("")
-        
-        try:
-            a = input("Detecting devices... \n\n"+
-                      "You can specify target indexes list, i.e.:  2,6,12  \n"
-                      "Press Enter when ready.\n\n"+
-                      "---------- "+"Type ------------ Version ----- IP ---\n")
 
+        try:
+            upgradables = []
+            a = ''
+            while len(upgradables) == 0:
+                time.sleep(0.01)
+                upgradables = [cli for cli in clients if cli['upgrade']]
+            
+            # a = input("Detecting devices... \n\n"+
+            #           "You can specify target indexes list, i.e.:  2,6,12  \n"
+            #           "Press Enter when ready.\n\n"+
+            #           "---------- "+"Type ------------ Version ----- IP ---\n")
             
         except KeyboardInterrupt:
             r.close()
@@ -226,9 +231,9 @@ if __name__ == '__main__':
         print("\nUpload to "+str(len(upgradables))+" devices :\n")
         for u in upgradables:
             print("\t"+u['shortname'].ljust(20)+u['ip'])
-        y = input("\nPlease confirm... [y/n]\n\n")
-                 
-        if y != 'y': continue
+            
+        # y = input("\nPlease confirm... [y/n]\n\n")
+        # if y != 'y': continue
             
         threadlist = []
         for cli in upgradables:

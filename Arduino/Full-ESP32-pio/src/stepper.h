@@ -26,10 +26,6 @@ void stepper_enable(bool doEnable)
 
 void stepper_breaker()
 {
-    // if (enableState) {
-    //     stepper_enable(false);
-    //     stepper.setTargetPositionToStop();
-    // }
     stepper_enable(false);
     if (stepper.isStartedAsService()) stepper.stopService();
 }
@@ -38,18 +34,10 @@ void stepper_slowrun()
 {
     state = SLOW;
 
-    if (k32->system->id() == 6) 
-        stepper.setSpeedInStepsPerSecond(speed * 0.1);
-    else 
-        stepper.setSpeedInStepsPerSecond(speed * (0.9+random(30)/100) / 12);
-
-    stepper.setAccelerationInStepsPerSecondPerSecond(accel/10);
-    stepper.setDecelerationInStepsPerSecondPerSecond(accel/10);
-
-    float target = targetRun*random(5,7)/abs(targetRun);
-    // if (k32->system->id() == 6)
-    //     target = targetRun*5/abs(targetRun);
+    stepper_enable(false);
+    float target = random(5,7)*targetRun/abs(targetRun);
     stepper.setTargetPositionRelativeInRevolutions(target);
+    stepper.setSpeedInStepsPerSecond(speed * (0.9+random(30)/100) / 12);
     stepper_enable(true);
 }
 
@@ -68,8 +56,6 @@ void stepper_offTask(void* param)
     }
 
     stepper_slowrun();
-
-
     vTaskDelete( NULL );
 }
 
@@ -79,7 +65,6 @@ void stepper_setup()
     speed = stepsPerRevolution*0.14;                //*0.14;
 
     accel = 0.055*stepsPerRevolution;
-
     decel = 0.015*stepsPerRevolution/targetRun;       //0.15*speed/targetRun;
 
     // set enable Pin
@@ -92,10 +77,19 @@ void stepper_setup()
     stepper.connectToPins(pulPin, dirPin);
     stepper.setStepsPerRevolution(stepsPerRevolution);
 
+    if (k32->system->id() == 6) { // Accel factor reduced for ESP-6
+        stepper.setAccelerationInStepsPerSecondPerSecond(accel/2);
+        stepper.setDecelerationInStepsPerSecondPerSecond(decel);
+    }
+    else {
+        stepper.setAccelerationInStepsPerSecondPerSecond(accel);
+        stepper.setDecelerationInStepsPerSecondPerSecond(decel);
+    }
+
 
     // Reach destination Callback
     stepper.registerTargetPositionReachedCallback([](long position){
-        xTaskCreate(stepper_offTask, "state_off", 2000, NULL, 1, NULL);
+        xTaskCreatePinnedToCore(stepper_offTask, "state_off", 2000, NULL, 1, NULL, 1);
     });
 
     // Start the stepper instance as a service in the "background" as a separate task
@@ -108,22 +102,16 @@ bool stepper_kick()
 {
     // Ready to start
     if (state == SLOW) {
-        stepper_enable(true);
-        stepper.setSpeedInStepsPerSecond(speed);
 
-        if (k32->system->id() == 6) { // Accel factor reduced for ESP-6
-            stepper.setAccelerationInStepsPerSecondPerSecond(accel/5);
-            stepper.setDecelerationInStepsPerSecondPerSecond(accel/5);
-        }
-        else {
-            stepper.setAccelerationInStepsPerSecondPerSecond(accel);
-            stepper.setDecelerationInStepsPerSecondPerSecond(decel);
-        }
-
+        stepper_enable(false);
         stepper.setTargetPositionRelativeInRevolutions(targetRun);
+        stepper.setSpeedInStepsPerSecond(speed);
+        stepper_enable(true);
+
         targetRun *= -1;
         state = MOVE;
         lastRunAt = millis();
+
         return true;
     }
     return false;

@@ -21,12 +21,12 @@ K32_ledstrip::K32_ledstrip(int chan, int pin, int type, int size) {
   this->_buffer = static_cast<pixelColor_t*>(malloc(this->_strand->numPixels * sizeof(pixelColor_t)));
 
   // LOOP task
-  xTaskCreate(this->draw,       // function
+  xTaskCreatePinnedToCore(this->draw,       // function
               "leds_show_task", // task name
               1000,             // stack memory
               (void *)this,     // args
               4,                // priority
-              NULL);            // handler
+              NULL, 1);            // handler
   
   // LOG("-- init strip");
   this->black();
