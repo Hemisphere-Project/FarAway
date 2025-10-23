@@ -8,6 +8,7 @@
 #define FA_VERSION  11    // FIX Watchdog
 #define FA_VERSION  12    // PIO version
 #define FA_VERSION  13    // Fix flexyCore
+#define FA_VERSION  14    // Fix blinky
 
 // Config (one time Burn): it is then stored in EEPROM !
 //
@@ -32,7 +33,7 @@ ESP_FlexyStepper stepper;
 
 #define PIN_LEDSTRIP  4
 #define PIN_REDDOT    27
-#define STRIP_TYPE    LED_SK6812W_V1  // LED_WS2812_V1  LED_WS2812B_V1  LED_WS2812B_V2  LED_WS2812B_V3  LED_WS2813_V1  LED_WS2813_V2   LED_WS2813_V3  LED_WS2813_V4  LED_SK6812_V1  LED_SK6812W_V1,
+#define STRIP_TYPE    LED_SK6812W_V3  // LED_WS2812_V1  LED_WS2812B_V1  LED_WS2812B_V2  LED_WS2812B_V3  LED_WS2813_V1  LED_WS2813_V2   LED_WS2813_V3  LED_WS2813_V4  LED_SK6812_V1  LED_SK6812W_V1  LED_SK6812W_V2  LED_SK6812W_V3
 #define STRIP_SIZE    135
 
 
@@ -40,6 +41,7 @@ float maxSpeed = 1;
 float lastSpeed = 0;
 float debugSpeed = -1;
 int master = 0;
+States lastRenderState = STOP;
 
 int lastTrigger = 0;
 
@@ -59,9 +61,7 @@ void setup()
   liddar_setup();
 
   // STEPPER
-  if (k32->system->id() == 6) stepper_setup(); // Accel factor reduced for ESP-6
-  else stepper_setup();
-
+  stepper_setup();
 
   // WIFI
   k32->init_wifi("faraway-v" + String(FA_VERSION));
@@ -156,15 +156,19 @@ void loop()
   }
   lastSpeed = speed;
 
-  if (stepper_state() == MOVE || stepper_state() == FREE) {
-    k32->light->anim("chaser")->stop();
-    // k32->light->anim("color")->push(master, master, master, master)->play();
-    k32->light->anim("runner")->push(master)->play();
-  }
-  else {
-    // k32->light->anim("color")->stop();
-    k32->light->anim("runner")->stop();
-    k32->light->anim("chaser")->push(6000, 10)->play();
+  States currentState = stepper_state();
+  if (currentState != lastRenderState) { 
+    if (stepper_state() == MOVE || stepper_state() == FREE) {
+      k32->light->anim("chaser")->stop();
+      // k32->light->anim("color")->push(master, master, master, master)->play();
+      k32->light->anim("runner")->push(master)->play();
+    }
+    else {
+      // k32->light->anim("color")->stop();
+      k32->light->anim("runner")->stop();
+      k32->light->anim("chaser")->push(6000, 10)->play();
+    }
+    lastRenderState = currentState;
   }
 
   // Feed dog

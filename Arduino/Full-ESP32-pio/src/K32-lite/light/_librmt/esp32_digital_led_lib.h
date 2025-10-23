@@ -111,6 +111,7 @@ extern "C"
     LED_SK6812_V1,
     LED_SK6812W_V1,
     LED_SK6812W_V2,
+    LED_SK6812W_V3,
   };
 
   const ledParams_t ledParamsAll[] = {
@@ -126,6 +127,7 @@ extern "C"
       [LED_SK6812_V1] = {.bytesPerPixel = 3, .T0H = 300, .T1H = 600, .T0L = 900, .T1L = 600, .TRS = 80000},  // R V B
       [LED_SK6812W_V1] = {.bytesPerPixel = 4, .T0H = 300, .T1H = 600, .T0L = 900, .T1L = 600, .TRS = 80000}, // R V B W
       [LED_SK6812W_V2] = {.bytesPerPixel = 4, .T0H = 450, .T1H = 850, .T0L = 850, .T1L = 450, .TRS = 50000}, // R V B W
+      [LED_SK6812W_V3] = {.bytesPerPixel = 4, .T0H = 200, .T1H = 700, .T0L = 1000, .T1L = 500, .TRS = 100000}, // R V B W - Maximum margin
   };
 
   

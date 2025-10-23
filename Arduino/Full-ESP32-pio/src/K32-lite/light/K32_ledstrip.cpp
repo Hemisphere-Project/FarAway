@@ -118,52 +118,45 @@ void K32_ledstrip::setBuffer(pixelColor_t* buffer, int _size, int offset) {
 void K32_ledstrip::show() {
   // LOG("LIGHT: show in");
   
-  // COPY Buffers to STRAND
+  // Wait until previous transmission is complete
   xSemaphoreTake(this->show_lock, portMAX_DELAY);
+  
+  // Copy buffer to strand pixels
   xSemaphoreTake(this->buffer_lock, portMAX_DELAY);
   if (this->dirty) {
-    
-    // LOGINL("show buffer // ");
-    // for(int i=0; i < this->size(); i++) LOGF(" %i", this->_buffer[i].r);
-    // LOG();
-    
-    memcpy(&this->_strand->pixels, &this->_buffer, sizeof(this->_buffer));
-    // for(int i=0; i < this->size(); i++) this->_strand->pixels[i] = this->_buffer[i];
+    // FIX: sizeof(this->_buffer) was wrong! _buffer is a pointer, so sizeof() returns 4/8 bytes not buffer size
+    // This was copying only first few pixels, leaving rest as garbage → causing random color flashes!
+    memcpy(this->_strand->pixels, this->_buffer, this->size() * sizeof(pixelColor_t));
     this->dirty = false;
-    // LOG("LIGHT: show dirty");
-
-    // LOGINL("show strand // ");
-    // for(int i=0; i < this->size(); i++) LOGF(" %i", this->_strand->pixels[i].r);
-    // LOG();
-
+    xSemaphoreGive(this->buffer_lock);
+    
+    // Trigger draw task (which will release show_lock when done)
     xSemaphoreGive(this->draw_lock);
   }
-  else xSemaphoreGive(this->show_lock);
-  xSemaphoreGive(this->buffer_lock);
-  // LOG("LIGHT: show end");
+  else {
+    xSemaphoreGive(this->buffer_lock);
+    xSemaphoreGive(this->show_lock);
+  }
 }
 
 void K32_ledstrip::draw(void *parameter)
 {
   K32_ledstrip *that = (K32_ledstrip *)parameter;
 
-  // ready
+  // ready - initial state
   xSemaphoreGive(that->show_lock);
 
   // run
   while (true) {
-    xSemaphoreTake(that->draw_lock, portMAX_DELAY);   // WAIT for show()
+    // Wait for show() to signal there's data to transmit
+    xSemaphoreTake(that->draw_lock, portMAX_DELAY);
     
-    // LOGINL("draw strand // ");
-    // for(int i=0; i < that->size(); i++) LOGF(" %i", that->_strand->pixels[i].r);
-    // LOG();
-
-    digitalLeds_updatePixels(that->_strand);           // PUSH LEDS TO RMT
+    // Transmit to LEDs (this blocks until RMT transmission completes)
+    digitalLeds_updatePixels(that->_strand);
     delay(1);
 
-    
-
-    xSemaphoreGive(that->show_lock);                  // READY for next show()
+    // Release show_lock to allow next show() call
+    xSemaphoreGive(that->show_lock);
   }
   vTaskDelete(NULL);
 }

@@ -4,7 +4,10 @@ int pulPin = 13;
 int dirPin = 12;
 int enablePin = 14;
 
-int stepsPerRevolution = 25600*2;
+int stepsPerRevolution = 25600*2; // 128
+// int stepsPerRevolution = 6400*2;     // 32
+// int stepsPerRevolution = 1600*2;     // 8
+
 
 States state = STOP;
 unsigned long lastRunAt = 0;
@@ -77,14 +80,14 @@ void stepper_setup()
     stepper.connectToPins(pulPin, dirPin);
     stepper.setStepsPerRevolution(stepsPerRevolution);
 
-    if (k32->system->id() == 6) { // Accel factor reduced for ESP-6
-        stepper.setAccelerationInStepsPerSecondPerSecond(accel/2);
-        stepper.setDecelerationInStepsPerSecondPerSecond(decel);
-    }
-    else {
+    // if (k32->system->id() == 6) { // Accel factor reduced for ESP-6
+    //     stepper.setAccelerationInStepsPerSecondPerSecond(accel/2);
+    //     stepper.setDecelerationInStepsPerSecondPerSecond(decel);
+    // }
+    // else {
         stepper.setAccelerationInStepsPerSecondPerSecond(accel);
         stepper.setDecelerationInStepsPerSecondPerSecond(decel);
-    }
+    // }
 
 
     // Reach destination Callback
