@@ -54,6 +54,9 @@ void setup()
   LOGSETUP();
   LOG("STARTING..");
 
+  // AUDIO
+  audio_setup();
+
   // K32 Lib
   k32 = new K32();
 
@@ -81,9 +84,6 @@ void setup()
   digitalWrite(PIN_REDDOT, HIGH);
 
   stepper_slowrun();
-
-  // AUDIO
-  audio_setup();
 
   // WDT
   esp_task_wdt_init(3, true); //enable panic so ESP32 restarts

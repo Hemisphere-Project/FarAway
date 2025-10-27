@@ -179,7 +179,8 @@ int digitalLeds_init()
   // FIX: Use ESP_INTR_FLAG_LEVEL2 to ensure RMT interrupt has higher priority than FreeRTOS tasks
   // This prevents the stepper task (priority 10 on core 0) from blocking RMT buffer refills
   // Level 2 interrupts can preempt tasks but are lower than critical level 3 interrupts
-  esp_intr_alloc(ETS_RMT_INTR_SOURCE, ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM, handleInterrupt, nullptr, &rmt_intr_handle);
+  // esp_intr_alloc(ETS_RMT_INTR_SOURCE, ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM, handleInterrupt, nullptr, &rmt_intr_handle);
+  esp_intr_alloc(ETS_RMT_INTR_SOURCE, 0, handleInterrupt, nullptr, &rmt_intr_handle);
 
   return 0;
 }

@@ -13,7 +13,40 @@ long lastStart = 0;
 bool lastLong = false;
 
 void audio_setup() {
-  SPIFFS.begin();
+  Serial.println("AUDIO: Mounting SPIFFS...");
+  
+  // First try to mount without formatting
+  if (!SPIFFS.begin(false)) {
+    Serial.println("SPIFFS: Mount failed, formatting...");
+    // Format the partition
+    if (!SPIFFS.format()) {
+      Serial.println("SPIFFS: Format failed!");
+    } else {
+      Serial.println("SPIFFS: Format OK, remounting...");
+      if (!SPIFFS.begin(false)) {
+        Serial.println("SPIFFS: Still failed after format!");
+      } else {
+        Serial.println("SPIFFS: Mounted after format (empty)");
+      }
+    }
+  } else {
+    Serial.println("SPIFFS: Mounted successfully");
+    
+    // List files
+    File root = SPIFFS.open("/");
+    if (root) {
+      File file = root.openNextFile();
+      Serial.println("SPIFFS Files:");
+      while(file) {
+        Serial.print("  ");
+        Serial.print(file.name());
+        Serial.print(" - ");
+        Serial.print(file.size());
+        Serial.println(" bytes");
+        file = root.openNextFile();
+      }
+    }
+  }
 
   audioLogger = &Serial;
   out = new AudioOutputI2SNoDAC();
